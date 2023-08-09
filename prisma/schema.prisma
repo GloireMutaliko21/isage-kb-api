@@ -9,3 +9,400 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+// model grades agents
+model Grade {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title     String @unique
+  rate      Json
+  folderIds Json
+
+  agents Agent[]
+
+  @@map("grades")
+}
+
+// model des agents
+model Agent {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  names     String
+  email     String @unique
+  matricule String @unique
+  sex       String
+  function  String
+  status    String
+
+  birthDate DateTime
+  engagDate DateTime
+  promDate  DateTime?
+  acadTitle DateTime
+
+  sifa     Int
+  username String?
+  password String?
+  contacts Json
+  imgUrl   String?
+
+  presences           Presence[]
+  conges              Conge[]
+  roles               Role[]               @relation(name: "accesses")
+  casSocs             CasSoc[]
+  casSocSubscriptions CasSocSubscription[]
+  folderElements      Folder[]
+
+  grade   Grade  @relation(fields: [gradeId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  gradeId String
+
+  // Salary relations
+  fichesPaie        FichePaie[]
+  remJMaladAccs     RemJMaladAcc[]
+  salaryDeductions  SalaryDeduction[]
+  primes            Prime[]
+  familyAllocations FamilyAllocation[]
+  suppHours         SuppHour[]
+  remJoursConges    RemDaysConge[]
+  remJoursFerie     RemDaysFerie[]
+
+  @@map("agents")
+}
+
+// Model des presences 
+model Presence {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  status String
+
+  agent   Agent  @relation(fields: [agentId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  agentId String
+
+  @@map("presences")
+}
+
+// model conges
+model Conge {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now()) // this field will be used for "Date de demande"
+  updatedAt DateTime @updatedAt
+
+  approved  Boolean  @default(false)
+  startDate DateTime
+  endDate   DateTime
+  agent     Agent    @relation(fields: [agentId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  agentId   String
+
+  @@map("conges")
+}
+
+// model roles
+model Role {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title  String  @unique
+  agents Agent[] @relation(name: "accesses")
+
+  @@map("roles")
+}
+
+// model pour enregistrer les cas sociaux
+model CasSoc {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  description String
+  endDate     DateTime
+  status      String
+  validity    String
+
+  agent               Agent                @relation(fields: [agentId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  agentId             String
+  casSocSubscriptions CasSocSubscription[]
+
+  @@map("casSocs")
+}
+
+// model de souscription aux cas sociaux
+model CasSocSubscription {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  montant Decimal
+
+  casSoc   CasSoc @relation(fields: [casSocId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  casSocId String
+  agent    Agent  @relation(fields: [agentId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  agentId  String
+
+  @@map("casSocSubscriptions")
+}
+
+// model pour les labels des elements du dossier
+model FolderElement {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title String @unique
+
+  agents Folder[]
+
+  @@map("folderElements")
+}
+
+// model relationnel pour les urls des fichiers des elements du dossier
+model Folder {
+  agent           Agent         @relation(fields: [agentId], references: [id])
+  agentId         String
+  folderElement   FolderElement @relation(fields: [folderElementId], references: [id])
+  folderElementId String
+  url             String
+
+  @@id([agentId, folderElementId])
+}
+
+// model pour enregistrer les fiches de paie
+model FichePaie {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  month      String
+  baseSalary Json
+  supHours   Json
+  jFeries    Json
+  jConge     Json
+  primes     Json
+  deductions Json
+  alloc      Json
+  jMaldAcc   Json
+
+  agent   Agent  @relation(fields: [agentId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  agentId String
+
+  @@map("fichesPaie")
+}
+
+// models pour enregistrer les details sur les remunerations Jours de maladies et accidents
+model RemJMaladAcc {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  days Decimal
+
+  agent   Agent  @relation(fields: [agentId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  agentId String
+
+  @@map("remJMaladAccs")
+}
+
+// models pour enregistrer les details sur les remunerations : Deductions sur salaire
+model SalaryDeduction {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  amount  Decimal
+  libelle String
+
+  agent   Agent  @relation(fields: [agentId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  agentId String
+
+  @@map("salaryDeductions")
+}
+
+// models pour enregistrer les details sur les remunerations : Primes
+model Prime {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  amount  Decimal
+  libelle String
+
+  agent   Agent  @relation(fields: [agentId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  agentId String
+
+  @@map("primes")
+}
+
+// models pour enregistrer les details sur les remunerations : Alloations familiales
+model FamilyAllocation {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  days       Decimal
+  nbChildren Decimal
+
+  agent   Agent  @relation(fields: [agentId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  agentId String
+
+  @@map("familyAllocations")
+}
+
+// models pour enregistrer les details sur les remunerations : heures supplementaires
+model SuppHour {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  number Decimal
+
+  agent   Agent  @relation(fields: [agentId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  agentId String
+
+  @@map("suppHours")
+}
+
+// models pour enregistrer les details sur les remunerations : remunerations jours de conge
+model RemDaysConge {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  days Decimal
+
+  agent   Agent  @relation(fields: [agentId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  agentId String
+
+  @@map("remCongeDays")
+}
+
+model RemDaysFerie {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  days Decimal
+
+  agent   Agent  @relation(fields: [agentId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  agentId String
+
+  @@map("remferieDays")
+}
+
+// GESTION PATRIMOINE
+// ==================
+
+// model pour les categories
+model Category {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  libelle String
+
+  articles        Article[]
+  immobilisations Immobilisation[]
+
+  @@map("categories")
+}
+
+// model pour les unites de mesure des articles (Cartons, Kgs, litres, ...)
+model Unity {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  libelle String
+
+  articles Article[]
+
+  @@map("unities")
+}
+
+// model pour enregistrer les services dans lesquels peuvent etre attaches les immobilisation ou affecter les articles
+model Service {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  libelle         String
+  immobilisations Immobilisation[]
+
+  @@map("services")
+}
+
+// model pour les articles de consommation et autres bien non immob
+model Article {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  libelle    String
+  qty        Decimal
+  stockAlert Decimal
+
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  categoryId String
+  unity      Unity    @relation(fields: [unityId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  unityId    String
+
+  operations Operation[]
+  commandes  Commande[]
+
+  @@map("articles")
+}
+
+// model pour les operation sur les articles
+model Operation {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  typeOp  String
+  libelle String
+  qty     Decimal
+  dateOp  DateTime
+
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  articleId String
+
+  @@map("operations")
+}
+
+// model pour passer les bons de commandes des articles
+model Commande {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  qty Decimal
+
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  articleId String
+
+  @@map("commandes")
+}
+
+// model pour gerer les immobilisations
+model Immobilisation {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  libelle      String
+  valDepart    Decimal
+  duration     Decimal
+  vnc          Decimal
+  amortissDate DateTime
+
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  categoryId String
+  service    Service  @relation(fields: [serviceId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  serviceId  String
+
+  @@map("immobilisations")
+}
