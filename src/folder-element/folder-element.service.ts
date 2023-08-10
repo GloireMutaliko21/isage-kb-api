@@ -20,7 +20,7 @@ export class FolderElementService {
     return folderElement;
   }
 
-  updateFolderElement(folderElementId: string, dto: UpdateFolderElementDto) {
+  editFolderElement(folderElementId: string, dto: UpdateFolderElementDto) {
     return this.folderElement.update({
       data: { ...dto },
       where: { id: folderElementId },
