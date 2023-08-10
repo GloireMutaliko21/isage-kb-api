@@ -31,7 +31,7 @@ export class FolderElementController {
     return this.folderElementService.createFolderElement(dto);
   }
 
-  @Patch('id')
+  @Patch(':id')
   editFolderElement(
     @Body() dto: UpdateFolderElementDto,
     @Param('id') folderElementId: string,
