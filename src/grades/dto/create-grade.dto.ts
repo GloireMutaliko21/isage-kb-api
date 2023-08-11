@@ -9,28 +9,28 @@ import {
 } from 'class-validator';
 
 class RateDTO {
-  @IsNotEmpty()
   @IsNumber()
+  @IsNotEmpty()
   base: number;
 
-  @IsNotEmpty()
   @IsNumber()
+  @IsNotEmpty()
   alloc: number;
 
   @IsNotEmpty()
   @IsNumber()
   conge: number;
 
-  @IsNotEmpty()
   @IsNumber()
+  @IsNotEmpty()
   ferie: number;
 
-  @IsNotEmpty()
   @IsNumber()
+  @IsNotEmpty()
   maladAcc: number;
 
-  @IsNotEmpty()
   @IsNumber()
+  @IsNotEmpty()
   heureSupp: number;
 }
 
@@ -42,6 +42,7 @@ export class CreateGradeDto {
 
   @IsObject()
   @ValidateNested()
+  @IsNotEmpty()
   rate: RateDTO;
 
   @IsArray()
