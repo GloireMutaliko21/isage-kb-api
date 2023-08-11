@@ -4,6 +4,7 @@ import { FolderElementModule } from './folder-element/folder-element.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { GradesModule } from './grades/grades.module';
 import { RolesModule } from './roles/roles.module';
+import { AgentsModule } from './agents/agents.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { RolesModule } from './roles/roles.module';
     GradesModule,
     RolesModule,
     PrismaModule,
+    AgentsModule,
   ],
 })
 export class AppModule {}
