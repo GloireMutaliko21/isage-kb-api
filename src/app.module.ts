@@ -10,8 +10,8 @@ import { RolesModule } from './roles/roles.module';
     ConfigModule.forRoot({ isGlobal: true }),
     FolderElementModule,
     GradesModule,
-    PrismaModule,
     RolesModule,
+    PrismaModule,
   ],
 })
 export class AppModule {}
