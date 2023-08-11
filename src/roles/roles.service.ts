@@ -62,7 +62,7 @@ export class RolesService {
 
     if (!role) throw new ForbiddenException('Ressource(s) could not be found');
 
-    const access = await this.AgentModel.update({
+    return this.AgentModel.update({
       where: { id: agentId },
       include: { roles: true },
       data: {
@@ -71,7 +71,6 @@ export class RolesService {
         },
       },
     });
-    return access;
   }
 
   async removeAccess(roleId: string, agentId: string) {
