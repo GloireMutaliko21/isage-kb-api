@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateFolderElementDto, UpdateFolderElementDto } from './dto';
 
@@ -11,8 +15,12 @@ export class FolderElementService {
     return this.folderElement.findMany();
   }
 
-  getFolderElementById(folderElementId: string) {
-    return this.folderElement.findUnique({ where: { id: folderElementId } });
+  async getFolderElementById(folderElementId: string) {
+    const folderEmt = await this.folderElement.findUnique({
+      where: { id: folderElementId },
+    });
+    if (!folderEmt) throw new ForbiddenException('Element could not be found');
+    return folderEmt;
   }
 
   async createFolderElement(dto: CreateFolderElementDto) {
@@ -20,7 +28,14 @@ export class FolderElementService {
     return folderElement;
   }
 
-  editFolderElement(folderElementId: string, dto: UpdateFolderElementDto) {
+  async editFolderElement(
+    folderElementId: string,
+    dto: UpdateFolderElementDto,
+  ) {
+    const folderEmt = await this.folderElement.findUnique({
+      where: { id: folderElementId },
+    });
+    if (!folderEmt) throw new ForbiddenException('Element could not be found');
     return this.folderElement.update({
       data: { ...dto },
       where: { id: folderElementId },
@@ -28,6 +43,10 @@ export class FolderElementService {
   }
 
   async deleteFolderElement(folderElementId: string) {
-    await this.folderElement.delete({ where: { id: folderElementId } });
+    const folderEmt = await this.folderElement.findUnique({
+      where: { id: folderElementId },
+    });
+    if (!folderEmt) throw new ForbiddenException('Element could not be found');
+    return this.folderElement.delete({ where: { id: folderElementId } });
   }
 }
