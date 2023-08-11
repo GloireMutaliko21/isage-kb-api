@@ -12,12 +12,13 @@ export class FolderElementService {
   folderElement = this.prisma.folderElement;
 
   getFolderElements() {
-    return this.folderElement.findMany();
+    return this.folderElement.findMany({ include: { agents: true } });
   }
 
   async getFolderElementById(folderElementId: string) {
     const folderEmt = await this.folderElement.findUnique({
       where: { id: folderElementId },
+      include: { agents: true },
     });
     if (!folderEmt) throw new ForbiddenException('Element could not be found');
     return folderEmt;
