@@ -8,8 +8,8 @@ import { GradesModule } from './grades/grades.module';
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     FolderElementModule,
-    PrismaModule,
     GradesModule,
+    PrismaModule,
   ],
 })
 export class AppModule {}

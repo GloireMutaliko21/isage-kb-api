@@ -5,7 +5,7 @@ import { CreateGradeDto, UpdateGradeDto } from './dto';
 @Injectable()
 export class GradesService {
   constructor(private prisma: PrismaService) {}
-  GradeModel = this.prisma.grade;
+  private GradeModel = this.prisma.grade;
 
   getGrades() {
     return this.GradeModel.findMany({ include: { agents: true } });

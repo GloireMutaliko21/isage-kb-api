@@ -5,7 +5,7 @@ import { CreateFolderElementDto, UpdateFolderElementDto } from './dto';
 @Injectable()
 export class FolderElementService {
   constructor(private prisma: PrismaService) {}
-  FolderElementModel = this.prisma.folderElement;
+  private FolderElementModel = this.prisma.folderElement;
 
   getFolderElements() {
     return this.FolderElementModel.findMany({ include: { agents: true } });
