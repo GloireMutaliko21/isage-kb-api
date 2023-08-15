@@ -6,12 +6,16 @@ import {
   Patch,
   Post,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { AgentsService } from './agents.service';
 import { CreateAgentDto, UpdateAgentDto } from './dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
+import { DefinePasswordAndUsernameDto } from '../auth/dto';
+import { GetUser } from '../auth/decorators';
+import { JwtGuard } from '../auth/guards';
 
 @Controller('agents')
 export class AgentsController {
@@ -51,6 +55,15 @@ export class AgentsController {
       imgUrl,
       public_id,
     });
+  }
+
+  @UseGuards(JwtGuard)
+  @Post('profile/pwd')
+  definePasswordAndUsername(
+    @Body() dto: DefinePasswordAndUsernameDto,
+    @GetUser('email') userEmail: string,
+  ) {
+    return this.agentService.definePasswordAndUsername(dto, userEmail);
   }
 
   @Patch(':id')

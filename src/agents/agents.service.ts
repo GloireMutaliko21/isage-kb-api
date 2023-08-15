@@ -1,14 +1,16 @@
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
-import crypto from 'crypto';
+import * as argon from 'argon2';
 import { PrismaService } from '../prisma/prisma.service';
 import { MailService } from '../mail/mail.service';
 import { CreateAgentDto, UpdateAgentDto, UpdateAgentProfileDto } from './dto';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { DefinePasswordAndUsernameDto } from '../auth/dto/auth.dto';
 
 @Injectable()
 export class AgentsService {
@@ -49,7 +51,7 @@ export class AgentsService {
   async createAgent(dto: CreateAgentDto) {
     try {
       const { access_token } = await this.signToken(
-        new Date().toLocaleDateString(),
+        `${new Date()}`,
         dto.email,
         '1d',
       );
@@ -67,6 +69,30 @@ export class AgentsService {
     } catch (error) {
       throw new InternalServerErrorException("Quelque chose s'est mal passé");
     }
+  }
+
+  async definePasswordAndUsername(
+    dto: DefinePasswordAndUsernameDto,
+    email: string,
+  ) {
+    const hash = await argon.hash(dto.password);
+    const agent = await this.AgentModel.findUnique({
+      where: { email, resetToken: { not: null } },
+    });
+    if (!agent) throw new ForbiddenException('Agent could not be found');
+
+    if (dto.password !== dto.confirmPassword)
+      throw new BadRequestException(
+        'Les deux mots de passe doivent correspondre',
+      );
+    return this.AgentModel.update({
+      data: {
+        username: dto.username ?? agent.username,
+        password: hash ?? agent.password,
+        resetToken: null,
+      },
+      where: { email },
+    });
   }
 
   async updateAgent(dto: UpdateAgentDto, agentId: string): Promise<any> {
