@@ -74,4 +74,8 @@ export class UpdateAgentProfileDto {
   @IsString()
   @IsOptional()
   imgUrl?: string;
+
+  @IsString()
+  @IsOptional()
+  public_id?: string;
 }

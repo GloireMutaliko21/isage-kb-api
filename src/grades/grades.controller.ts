@@ -1,3 +1,4 @@
+import { RolesGuard } from './../roles/guards/role.guard';
 import {
   Body,
   Controller,
@@ -13,8 +14,11 @@ import {
 import { GradesService } from './grades.service';
 import { CreateGradeDto, UpdateGradeDto } from './dto';
 import { JwtGuard } from '../auth/guards/jwt.guard';
+import { Roles } from '../roles/decorators/roles.decorator';
+import { Role } from '../roles/enum/role.enum';
 
-@UseGuards(JwtGuard)
+@Roles(Role.DuPers)
+@UseGuards(JwtGuard, RolesGuard)
 @Controller('grades')
 export class GradesController {
   constructor(private gradeService: GradesService) {}

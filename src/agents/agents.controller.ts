@@ -37,15 +37,19 @@ export class AgentsController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     let imgUrl = '';
+    let public_id = '';
     if (file) {
       const fileInfos = await this.cloudinaryService.upload(
         file,
         'AgentsProfiles',
       );
       imgUrl = fileInfos.secure_url;
+      public_id = fileInfos.public_id;
     }
     return this.agentService.createAgent({
       ...dto,
+      imgUrl,
+      public_id,
     });
   }
 
