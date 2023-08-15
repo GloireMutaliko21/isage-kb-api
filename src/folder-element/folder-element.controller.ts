@@ -1,3 +1,4 @@
+import { JwtGuard } from './../auth/guards/jwt.guard';
 import {
   Body,
   Controller,
@@ -8,10 +9,12 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { FolderElementService } from './folder-element.service';
 import { CreateFolderElementDto, UpdateFolderElementDto } from './dto';
 
+@UseGuards(JwtGuard)
 @Controller('folder-element')
 export class FolderElementController {
   constructor(private folderElementService: FolderElementService) {}

@@ -19,6 +19,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       include: { roles: true, grade: true, folderElements: true },
     });
     delete user.password;
-    return user;
+    const roles = user.roles.map((role) => role.title);
+    delete user.roles;
+    return { ...user, roles };
   }
 }
