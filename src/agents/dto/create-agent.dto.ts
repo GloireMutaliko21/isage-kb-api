@@ -1,9 +1,11 @@
+import { Type } from 'class-transformer';
 import {
   IsDate,
   IsEmail,
   IsNotEmpty,
   IsNumber,
   IsObject,
+  IsOptional,
   IsString,
 } from 'class-validator';
 
@@ -33,16 +35,19 @@ export class CreateAgentDto {
   @IsNotEmpty()
   status: string;
 
+  @Type(() => Date)
   @IsDate()
   @IsNotEmpty()
   birthDate: Date;
 
+  @Type(() => Date)
   @IsDate()
   @IsNotEmpty()
   engagDate: Date;
 
+  @Type(() => Date)
   @IsDate()
-  @IsNotEmpty()
+  @IsOptional()
   promDate?: Date;
 
   @IsString()
@@ -54,11 +59,11 @@ export class CreateAgentDto {
   sifa: number;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   username?: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   password?: string;
 
   @IsObject()
@@ -66,6 +71,10 @@ export class CreateAgentDto {
   contacts: Record<string, any>;
 
   @IsString()
+  @IsOptional()
+  imgUrl?: string;
+
+  @IsString()
   @IsNotEmpty()
-  imgUrl: string;
+  gradeId: string;
 }

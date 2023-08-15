@@ -15,7 +15,6 @@ import { FolderElementModule } from './folder-element/folder-element.module';
     FolderElementModule,
     GradesModule,
     RolesModule,
-    PrismaModule,
     AgentsModule,
     MailerModule.forRoot({
       transport: {
@@ -27,6 +26,7 @@ import { FolderElementModule } from './folder-element/folder-element.module';
       },
     }),
     MailModule,
+    PrismaModule,
   ],
 })
 export class AppModule {}
