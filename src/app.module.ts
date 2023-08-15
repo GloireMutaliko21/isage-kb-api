@@ -8,6 +8,7 @@ import { AgentsModule } from './agents/agents.module';
 import { RolesModule } from './roles/roles.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { FolderElementModule } from './folder-element/folder-element.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { FolderElementModule } from './folder-element/folder-element.module';
     }),
     MailModule,
     PrismaModule,
+    CloudinaryModule,
   ],
 })
 export class AppModule {}
