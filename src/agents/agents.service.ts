@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { MailService } from '../mail/mail.service';
-import { CreateAgentDto, UpdateAgentDto } from './dto';
+import { CreateAgentDto, UpdateAgentDto, UpdateAgentProfileDto } from './dto';
 
 @Injectable()
 export class AgentsService {
@@ -52,7 +52,7 @@ export class AgentsService {
   }
 
   async updateAgent(dto: UpdateAgentDto, agentId: string): Promise<any> {
-    const html = `<b>Bonjour, certaines de vos informations ont été mises à jour/b>`;
+    const html = `<b>Bonjour, certaines de vos informations ont été mises à jour</b>`;
 
     try {
       const agent = await this.AgentModel.findUnique({
@@ -78,4 +78,8 @@ export class AgentsService {
       throw new InternalServerErrorException(error);
     }
   }
+
+  // async updateProfile(dto: UpdateAgentProfileDto, agentId: string): Promise<any> {
+
+  // }
 }
