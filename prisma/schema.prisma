@@ -41,7 +41,7 @@ model Agent {
   birthDate DateTime
   engagDate DateTime
   promDate  DateTime?
-  acadTitle DateTime
+  acadTitle String
 
   sifa     Int
   username String?
