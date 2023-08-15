@@ -25,7 +25,11 @@ export class AgentsService {
     try {
       const agent = await this.AgentModel.findUnique({
         where: { id: agentId },
-        include: { grade: true, folderElements: true, roles: true },
+        include: {
+          grade: true,
+          folderElements: true,
+          roles: true,
+        },
       });
       if (!agent) throw new ForbiddenException('Agent could not be found');
       return agent;
