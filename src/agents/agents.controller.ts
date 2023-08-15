@@ -3,12 +3,13 @@ import {
   Controller,
   Get,
   Param,
+  Patch,
   Post,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import { AgentsService } from './agents.service';
-import { CreateAgentDto } from './dto';
+import { CreateAgentDto, UpdateAgentDto } from './dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
@@ -46,5 +47,10 @@ export class AgentsController {
     return this.agentService.createAgent({
       ...dto,
     });
+  }
+
+  @Patch(':id')
+  updateAgent(@Param('id') agentId: string, @Body() dto: UpdateAgentDto) {
+    return this.agentService.updateAgent(dto, agentId);
   }
 }
