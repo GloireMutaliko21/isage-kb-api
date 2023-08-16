@@ -28,6 +28,7 @@ export class GradesController {
     return this.gradeService.getGrades();
   }
 
+  @Roles(Role.DuPatr)
   @Get(':id')
   getGradeById(@Param('id') gradeId: string) {
     return this.gradeService.getGradeById(gradeId);

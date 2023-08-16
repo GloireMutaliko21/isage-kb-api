@@ -29,10 +29,16 @@ export class AuthService {
       const matchesPwd = await argon.verify(agent.password, dto.password);
       if (!matchesPwd) throw new UnauthorizedException('Invalid auth infos');
 
+      const { access_token } = await this.agentService.signToken(
+        agent.id,
+        agent.email,
+        '15d',
+      );
+
       return {
         message: 'Connexion success',
         user: agent,
-        token: this.agentService.signToken(agent.id, agent.email, '15d'),
+        token: access_token,
       };
     } catch (error) {}
   }
