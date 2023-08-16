@@ -17,6 +17,7 @@ import { DefinePasswordAndUsernameDto } from '../auth/dto';
 import { GetUser } from '../auth/decorators';
 import { JwtGuard } from '../auth/guards';
 
+@UseGuards(JwtGuard)
 @Controller('agents')
 export class AgentsController {
   constructor(
@@ -31,6 +32,11 @@ export class AgentsController {
 
   @Get(':id')
   getAgentById(@Param('id') agentId: string) {
+    return this.agentService.getAgentById(agentId);
+  }
+
+  @Get('profile')
+  getAgentProfile(@GetUser('id') agentId: string) {
     return this.agentService.getAgentById(agentId);
   }
 
@@ -57,7 +63,6 @@ export class AgentsController {
     });
   }
 
-  @UseGuards(JwtGuard)
   @Post('profile/pwd')
   definePasswordAndUsername(
     @Body() dto: DefinePasswordAndUsernameDto,
