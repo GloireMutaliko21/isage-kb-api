@@ -32,20 +32,21 @@ export class AgentsService {
   }
 
   async getAgentById(agentId: string) {
-    try {
-      const agent = await this.AgentModel.findUnique({
-        where: { id: agentId },
-        include: {
-          grade: true,
-          folderElements: true,
-          roles: true,
-        },
-      });
-      if (!agent) throw new ForbiddenException('Agent could not be found');
-      return agent;
-    } catch (error) {
-      throw new InternalServerErrorException(error);
-    }
+    console.log(agentId);
+    // try {
+    const agent = await this.AgentModel.findUnique({
+      where: { id: agentId },
+      include: {
+        grade: true,
+        folderElements: true,
+        roles: true,
+      },
+    });
+    if (!agent) throw new ForbiddenException('Agent could not be found');
+    return agent;
+    // } catch (error) {
+    //   throw new InternalServerErrorException(error);
+    // }
   }
 
   async createAgent(dto: CreateAgentDto) {

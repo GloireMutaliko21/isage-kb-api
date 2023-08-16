@@ -16,8 +16,12 @@ import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { DefinePasswordAndUsernameDto } from '../auth/dto';
 import { GetUser } from '../auth/decorators';
 import { JwtGuard } from '../auth/guards';
+import { RolesGuard } from '../roles/guards';
+import { Roles } from '../roles/decorators';
+import { Role } from '../roles/enum';
 
-@UseGuards(JwtGuard)
+// @Roles(Role.DuPatr)
+@UseGuards(JwtGuard, RolesGuard)
 @Controller('agents')
 export class AgentsController {
   constructor(
@@ -30,13 +34,14 @@ export class AgentsController {
     return this.agentService.getAgents();
   }
 
-  @Get(':id')
-  getAgentById(@Param('id') agentId: string) {
+  @Roles(Role.User)
+  @Get('profile')
+  getAgentProfile(@GetUser('id') agentId: string) {
     return this.agentService.getAgentById(agentId);
   }
 
-  @Get('profile')
-  getAgentProfile(@GetUser('id') agentId: string) {
+  @Get(':id')
+  getAgentById(@Param('id') agentId: string) {
     return this.agentService.getAgentById(agentId);
   }
 
