@@ -44,7 +44,7 @@ model Agent {
   acadTitle String
 
   sifa      Int
-  username  String?
+  username  String? @unique
   password  String?
   contacts  Json
   imgUrl    String?
