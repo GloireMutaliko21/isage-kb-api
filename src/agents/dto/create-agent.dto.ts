@@ -75,6 +75,14 @@ export class CreateAgentDto {
   imgUrl?: string;
 
   @IsString()
+  @IsOptional()
+  public_id?: string;
+
+  @IsString()
+  @IsOptional()
+  resetToken?: string;
+
+  @IsString()
   @IsNotEmpty()
   gradeId: string;
 }

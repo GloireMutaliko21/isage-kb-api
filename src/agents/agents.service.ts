@@ -1,15 +1,25 @@
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
+import * as argon from 'argon2';
 import { PrismaService } from '../prisma/prisma.service';
 import { MailService } from '../mail/mail.service';
-import { CreateAgentDto } from './dto';
+import { CreateAgentDto, UpdateAgentDto, UpdateAgentProfileDto } from './dto';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import { DefinePasswordAndUsernameDto } from '../auth/dto/auth.dto';
 
 @Injectable()
 export class AgentsService {
-  constructor(private prisma: PrismaService, private mailer: MailService) {}
+  constructor(
+    private prisma: PrismaService,
+    private mailer: MailService,
+    private config: ConfigService,
+    private jwt: JwtService,
+  ) {}
   private AgentModel = this.prisma.agent;
 
   getAgents() {
@@ -22,6 +32,73 @@ export class AgentsService {
   }
 
   async getAgentById(agentId: string) {
+    console.log(agentId);
+    // try {
+    const agent = await this.AgentModel.findUnique({
+      where: { id: agentId },
+      include: {
+        grade: true,
+        folderElements: true,
+        roles: true,
+      },
+    });
+    if (!agent) throw new ForbiddenException('Agent could not be found');
+    return agent;
+    // } catch (error) {
+    //   throw new InternalServerErrorException(error);
+    // }
+  }
+
+  async createAgent(dto: CreateAgentDto) {
+    try {
+      const { access_token } = await this.signToken(
+        `${new Date()}`,
+        dto.email,
+        '1d',
+      );
+      const agent = await this.AgentModel.create({
+        data: {
+          ...dto,
+          resetToken: access_token,
+        },
+      });
+      this.mailer.sendMail(
+        agent.email,
+        `<b>Bonjour, Inscription reussie</b><br/><p>Clique sur ce <a href="http://localhost:3000/auth/createpass/${agent.id}?t=${access_token}">lien</a> pour definir votre mot de passe</p>`,
+      );
+      return agent;
+    } catch (error) {
+      throw new InternalServerErrorException("Quelque chose s'est mal passé");
+    }
+  }
+
+  async definePasswordAndUsername(
+    dto: DefinePasswordAndUsernameDto,
+    email: string,
+  ) {
+    const hash = await argon.hash(dto.password);
+    const agent = await this.AgentModel.findUnique({
+      where: { email, resetToken: { not: null } },
+    });
+    if (!agent) throw new ForbiddenException('Agent could not be found');
+
+    if (dto.password !== dto.confirmPassword)
+      throw new BadRequestException(
+        'Les deux mots de passe doivent correspondre',
+      );
+    return this.AgentModel.update({
+      data: {
+        username: dto.username ?? agent.username,
+        password: hash ?? agent.password,
+        resetToken: null,
+      },
+      where: { email },
+    });
+  }
+
+  async updateAgent(dto: UpdateAgentDto, agentId: string): Promise<any> {
+    const html = `<b>Bonjour, certaines de vos informations ont été mises à jour</b>`;
+
     try {
       const agent = await this.AgentModel.findUnique({
         where: { id: agentId },
@@ -32,22 +109,43 @@ export class AgentsService {
         },
       });
       if (!agent) throw new ForbiddenException('Agent could not be found');
-      return agent;
+      this.mailer.sendMail(agent.email, html);
+      return await this.AgentModel.update({
+        where: { id: agentId },
+        data: { ...dto },
+        include: {
+          grade: true,
+          folderElements: true,
+          roles: true,
+        },
+      });
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
   }
 
-  async createAgent(dto: CreateAgentDto) {
-    const html = `<b>Bonjour, Inscription reussie</b>`;
-    try {
-      const agent = await this.AgentModel.create({
-        data: { ...dto },
-      });
-      this.mailer.sendMail(agent.email, html);
-      return agent;
-    } catch (error) {
-      throw new InternalServerErrorException(error);
-    }
+  public async signToken(
+    userId: string,
+    email: string,
+    expireesIn: string,
+  ): Promise<{ access_token: string }> {
+    const payload = {
+      sub: userId,
+      email,
+    };
+
+    const secret = this.config.get<string>('JWT_SECRET_KEY');
+    const access_token = await this.jwt.signAsync(payload, {
+      expiresIn: expireesIn,
+      secret,
+    });
+
+    return {
+      access_token,
+    };
   }
+
+  // async updateProfile(dto: UpdateAgentProfileDto, agentId: string): Promise<any> {
+
+  // }
 }

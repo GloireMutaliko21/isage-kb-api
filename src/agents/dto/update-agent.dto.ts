@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import {
   IsDate,
   IsEmail,
@@ -21,10 +22,12 @@ export class UpdateAgentDto {
   @IsOptional()
   status?: string;
 
+  @Type(() => Date)
   @IsDate()
   @IsOptional()
   engagDate?: Date;
 
+  @Type(() => Date)
   @IsDate()
   @IsOptional()
   promDate?: Date;
@@ -51,6 +54,7 @@ export class UpdateAgentProfileDto {
   @IsOptional()
   sex?: string;
 
+  @Type(() => Date)
   @IsDate()
   @IsOptional()
   bithDate?: Date;
@@ -70,4 +74,8 @@ export class UpdateAgentProfileDto {
   @IsString()
   @IsOptional()
   imgUrl?: string;
+
+  @IsString()
+  @IsOptional()
+  public_id?: string;
 }

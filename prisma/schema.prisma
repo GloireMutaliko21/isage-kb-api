@@ -43,11 +43,14 @@ model Agent {
   promDate  DateTime?
   acadTitle String
 
-  sifa     Int
-  username String?
-  password String?
-  contacts Json
-  imgUrl   String?
+  sifa      Int
+  username  String? @unique
+  password  String?
+  contacts  Json
+  imgUrl    String?
+  public_id String?
+
+  resetToken String?
 
   presences           Presence[]
   conges              Conge[]

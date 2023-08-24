@@ -9,6 +9,7 @@ import { RolesModule } from './roles/roles.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { FolderElementModule } from './folder-element/folder-element.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
     MailModule,
     PrismaModule,
     CloudinaryModule,
+    AuthModule,
   ],
 })
 export class AppModule {}
