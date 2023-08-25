@@ -8,7 +8,7 @@ export class MailService {
     private config: ConfigService,
     private readonly mailerService: MailerService,
   ) {}
-
+  // send mail
   sendMail(mail: string, html: any): void {
     this.mailerService.sendMail({
       to: mail,
