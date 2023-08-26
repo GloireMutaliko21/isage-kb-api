@@ -13,7 +13,9 @@ import {
 } from '@nestjs/common';
 import { FolderElementService } from './folder-element.service';
 import { CreateFolderElementDto, UpdateFolderElementDto } from './dto';
+import { Roles } from '../roles/decorators/roles.decorator';
 
+// @Roles
 @UseGuards(JwtGuard)
 @Controller('folder-element')
 export class FolderElementController {
