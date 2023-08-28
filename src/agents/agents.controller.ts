@@ -53,6 +53,7 @@ export class AgentsController {
   ) {
     let imgUrl = '';
     let public_id = '';
+
     if (file) {
       const fileInfos = await this.cloudinaryService.upload(
         file,

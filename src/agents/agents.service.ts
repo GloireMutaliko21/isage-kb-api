@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   Injectable,
   InternalServerErrorException,
@@ -21,6 +22,7 @@ export class AgentsService {
     private jwt: JwtService,
   ) {}
   private AgentModel = this.prisma.agent;
+  private RoleModel = this.prisma.role;
 
   getAgents() {
     return this.AgentModel.findMany({
@@ -50,16 +52,31 @@ export class AgentsService {
   }
 
   async createAgent(dto: CreateAgentDto) {
+    const { access_token } = await this.signToken(
+      `${new Date()}`,
+      dto.email,
+      '1d',
+    );
+    const roleId = await this.RoleModel.findFirst({
+      where: { title: 'General access' },
+      select: { id: true },
+    });
+    const existAgent = await this.AgentModel.findFirst({
+      where: {
+        OR: [{ email: dto.email }, { matricule: dto.matricule }],
+      },
+    });
+    if (existAgent !== null)
+      throw new ConflictException('One or more infrmations already exist');
+
     try {
-      const { access_token } = await this.signToken(
-        `${new Date()}`,
-        dto.email,
-        '1d',
-      );
       const agent = await this.AgentModel.create({
         data: {
           ...dto,
           resetToken: access_token,
+          roles: {
+            connect: { id: roleId.id },
+          },
         },
       });
       this.mailer.sendMail(
