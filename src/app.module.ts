@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { ScheduleModule } from '@nestjs/schedule';
 
 import { MailModule } from './mail/mail.module';
 import { GradesModule } from './grades/grades.module';
@@ -11,10 +12,12 @@ import { FolderElementModule } from './folder-element/folder-element.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { AuthModule } from './auth/auth.module';
 import { CongeModule } from './conge/conge.module';
+import { AttendencyModule } from './attendency/attendency.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    ScheduleModule.forRoot(),
     FolderElementModule,
     GradesModule,
     RolesModule,
@@ -33,6 +36,7 @@ import { CongeModule } from './conge/conge.module';
     CloudinaryModule,
     AuthModule,
     CongeModule,
+    AttendencyModule,
   ],
 })
 export class AppModule {}
