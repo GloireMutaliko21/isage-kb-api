@@ -5,7 +5,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { ApprouveCongeDto, CreateCongeDto, RequestCongeDto } from './dto';
+import { CreateCongeDto } from './dto';
 import { MailService } from '../mail/mail.service';
 
 @Injectable()
@@ -17,18 +17,18 @@ export class CongeService {
 
   private readonly CongeModel = this.prisma.conge;
 
-  requestConge(dto: RequestCongeDto) {
+  requestConge(agentId: string) {
     return this.CongeModel.create({
       data: {
-        agentId: dto.agentId,
+        agentId,
       },
     });
   }
 
-  async approuveConge(dto: ApprouveCongeDto, agentId: string, congeId: string) {
+  async approuveConge(dto: CreateCongeDto, congeId: string) {
     const conge = await this.CongeModel.findFirst({
       where: {
-        agentId,
+        agentId: dto.agentId,
         approved: false,
       },
       include: { agent: true },
