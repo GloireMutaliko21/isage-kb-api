@@ -75,6 +75,7 @@ export class AgentsService {
         },
       });
       this.mailer.sendMail(
+        'Register Success',
         agent.email,
         `<b>Bonjour, Inscription reussie</b><br/><p>Clique sur ce <a href="http://localhost:3000/auth/createpass/${agent.id}?t=${access_token}">lien</a> pour definir votre mot de passe</p>`,
       );
@@ -121,7 +122,7 @@ export class AgentsService {
         },
       });
       if (!agent) throw new ForbiddenException('Agent could not be found');
-      this.mailer.sendMail(agent.email, html);
+      this.mailer.sendMail('Register Success', agent.email, html);
       return await this.AgentModel.update({
         where: { id: agentId },
         data: { ...dto },

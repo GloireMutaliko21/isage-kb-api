@@ -9,11 +9,11 @@ export class MailService {
     private readonly mailerService: MailerService,
   ) {}
   // send mail
-  sendMail(mail: string, html: any): void {
+  sendMail(mailObject: string, mail: string, html: any): void {
     this.mailerService.sendMail({
       to: mail,
       from: this.config.get('MAIL_USER'),
-      subject: 'Register success',
+      subject: mailObject,
       text: 'Congrats',
       html: html,
     });
