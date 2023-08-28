@@ -30,16 +30,17 @@ export class AgentsController {
   ) {}
 
   @Get()
+  @Roles(Role.Admin, Role.DuPers)
   getAgents() {
     return this.agentService.getAgents();
   }
 
-  @Roles(Role.User)
   @Get('profile')
   getAgentProfile(@GetUser('id') agentId: string) {
     return this.agentService.getAgentById(agentId);
   }
 
+  @Roles(Role.Admin, Role.DuPers)
   @Get(':id')
   getAgentById(@Param('id') agentId: string) {
     return this.agentService.getAgentById(agentId);
@@ -47,12 +48,14 @@ export class AgentsController {
 
   @UseInterceptors(FileInterceptor('file'))
   @Post()
+  @Roles(Role.Admin, Role.DuPers)
   async createAgent(
     @Body() dto: CreateAgentDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
     let imgUrl = '';
     let public_id = '';
+
     if (file) {
       const fileInfos = await this.cloudinaryService.upload(
         file,
@@ -77,6 +80,7 @@ export class AgentsController {
   }
 
   @Patch(':id')
+  @Roles(Role.Admin, Role.DuPers)
   updateAgent(@Param('id') agentId: string, @Body() dto: UpdateAgentDto) {
     return this.agentService.updateAgent(dto, agentId);
   }

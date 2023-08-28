@@ -95,10 +95,10 @@ model Conge {
   createdAt DateTime @default(now()) // this field will be used for "Date de demande"
   updatedAt DateTime @updatedAt
 
-  approved  Boolean  @default(false)
-  startDate DateTime
-  endDate   DateTime
-  agent     Agent    @relation(fields: [agentId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  approved  Boolean   @default(false)
+  startDate DateTime?
+  endDate   DateTime?
+  agent     Agent     @relation(fields: [agentId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   agentId   String
 
   @@map("conges")

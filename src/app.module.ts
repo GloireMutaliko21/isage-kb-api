@@ -10,6 +10,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { FolderElementModule } from './folder-element/folder-element.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { AuthModule } from './auth/auth.module';
+import { CongeModule } from './conge/conge.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { AuthModule } from './auth/auth.module';
     PrismaModule,
     CloudinaryModule,
     AuthModule,
+    CongeModule,
   ],
 })
 export class AppModule {}

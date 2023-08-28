@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   Injectable,
   InternalServerErrorException,
@@ -21,6 +22,7 @@ export class AgentsService {
     private jwt: JwtService,
   ) {}
   private AgentModel = this.prisma.agent;
+  private RoleModel = this.prisma.role;
 
   getAgents() {
     return this.AgentModel.findMany({
@@ -32,8 +34,6 @@ export class AgentsService {
   }
 
   async getAgentById(agentId: string) {
-    console.log(agentId);
-    // try {
     const agent = await this.AgentModel.findUnique({
       where: { id: agentId },
       include: {
@@ -44,25 +44,38 @@ export class AgentsService {
     });
     if (!agent) throw new ForbiddenException('Agent could not be found');
     return agent;
-    // } catch (error) {
-    //   throw new InternalServerErrorException(error);
-    // }
   }
 
   async createAgent(dto: CreateAgentDto) {
+    const { access_token } = await this.signToken(
+      `${new Date()}`,
+      dto.email,
+      '1d',
+    );
+    const roleId = await this.RoleModel.findFirst({
+      where: { title: 'General access' },
+      select: { id: true },
+    });
+    const existAgent = await this.AgentModel.findFirst({
+      where: {
+        OR: [{ email: dto.email }, { matricule: dto.matricule }],
+      },
+    });
+    if (existAgent !== null)
+      throw new ConflictException('One or more infrmations already exist');
+
     try {
-      const { access_token } = await this.signToken(
-        `${new Date()}`,
-        dto.email,
-        '1d',
-      );
       const agent = await this.AgentModel.create({
         data: {
           ...dto,
           resetToken: access_token,
+          roles: {
+            connect: { id: roleId.id },
+          },
         },
       });
       this.mailer.sendMail(
+        'Register Success',
         agent.email,
         `<b>Bonjour, Inscription reussie</b><br/><p>Clique sur ce <a href="http://localhost:3000/auth/createpass/${agent.id}?t=${access_token}">lien</a> pour definir votre mot de passe</p>`,
       );
@@ -109,7 +122,7 @@ export class AgentsService {
         },
       });
       if (!agent) throw new ForbiddenException('Agent could not be found');
-      this.mailer.sendMail(agent.email, html);
+      this.mailer.sendMail('Register Success', agent.email, html);
       return await this.AgentModel.update({
         where: { id: agentId },
         data: { ...dto },
