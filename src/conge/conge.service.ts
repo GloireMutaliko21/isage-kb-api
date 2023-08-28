@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ApprouveCongeDto, CreateCongeDto, RequestCongeDto } from './dto';
@@ -15,7 +16,6 @@ export class CongeService {
   ) {}
 
   private readonly CongeModel = this.prisma.conge;
-  // private readonly AgentModel = this.prisma.agent;
 
   requestConge(dto: RequestCongeDto) {
     return this.CongeModel.create({
@@ -44,9 +44,10 @@ export class CongeService {
       },
     });
 
-    this.mailer.sendMail(
-      conge.agent.email,
-      `<div>
+    try {
+      this.mailer.sendMail(
+        conge.agent.email,
+        `<div>
         Bonjour ${conge.agent.names} ! 
         Après votre demande de congé en date du ${conge.createdAt.toISOString()}, Nous vous informons que votre demande a été approvée avec les détails suivants : 
 
@@ -54,12 +55,15 @@ export class CongeService {
           <li>Date de début : <b>${approvedConge.startDate}</b></li>
           <li>Date de fin : <b>${approvedConge.endDate}</b></li>
         </ul>
-
+        
         Nous vous souhaitons un bon répos et à très bientôt ! 🥰
-      </div>`,
-    );
+        </div>`,
+      );
 
-    return approvedConge;
+      return approvedConge;
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 
   async createConge(dto: CreateCongeDto) {
@@ -75,26 +79,47 @@ export class CongeService {
     if (existConge)
       throw new ConflictException('This agent is still in leave ');
 
-    const conge = await this.CongeModel.create({
-      data: { ...dto },
-      include: { agent: true },
-    });
+    try {
+      const conge = await this.CongeModel.create({
+        data: { ...dto },
+        include: { agent: true },
+      });
 
-    this.mailer.sendMail(
-      conge.agent.email,
-      `<div>
+      this.mailer.sendMail(
+        conge.agent.email,
+        `<div>
         Bonjour ${conge.agent.names} ! 
         Nous tenons à vous annoncer que nous nous plaçon en congé en respect des stipulations contractuelles avec les détails suivants : 
 
         <ul>
           <li>Date de début : <b>${conge.startDate}</b></li>
           <li>Date de fin : <b>${conge.endDate}</b></li>
-        </ul>
+          </ul>
+          
+          Nous vous souhaitons un bon répos et à très bientôt ! 🥰
+          </div>`,
+      );
 
-        Nous vous souhaitons un bon répos et à très bientôt ! 🥰
-      </div>`,
-    );
+      return conge;
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
 
-    return conge;
+  async getAgentsOnConge() {
+    const currentDate = new Date();
+
+    const agentsOnLeave = await this.CongeModel.findMany({
+      where: {
+        endDate: {
+          gte: currentDate,
+        },
+      },
+      select: {
+        agent: true,
+      },
+    });
+
+    return agentsOnLeave.map((record) => record.agent);
   }
 }
