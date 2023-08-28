@@ -18,13 +18,20 @@ export class AttendencyService {
     Service to point every moorning attendency for agents on leave with status "en conge"
   */
   @Cron(CronExpression.MONDAY_TO_FRIDAY_AT_8AM)
-  async attendenceAgentsInConge() {
+  private async attendenceAgentsInConge() {
     const currentDate = new Date();
+
+    const agentsWithPresenceIds = (await this.getDailyAttendencies()).map(
+      (presence) => presence.agentId,
+    );
 
     const agentsOnLeave = await this.prisma.conge.findMany({
       where: {
         endDate: {
           gte: currentDate,
+        },
+        agentId: {
+          notIn: agentsWithPresenceIds,
         },
       },
       select: {
@@ -58,23 +65,17 @@ export class AttendencyService {
 
     const attendencies = await this.AttendencyModel.findMany({
       where: {
-        AND: [
-          {
-            agentId: dto.agentId,
-            createdAt: {
-              gte: new Date(
-                date.getFullYear(),
-                date.getMonth(),
-                date.getDate(),
-              ),
-              lt: new Date(
-                date.getFullYear(),
-                date.getMonth(),
-                date.getDate() + 1,
-              ),
-            },
+        AND: {
+          agentId: dto.agentId,
+          createdAt: {
+            gte: new Date(date.getFullYear(), date.getMonth(), date.getDate()),
+            lt: new Date(
+              date.getFullYear(),
+              date.getMonth(),
+              date.getDate() + 1,
+            ),
           },
-        ],
+        },
       },
     });
 
@@ -165,7 +166,7 @@ export class AttendencyService {
     Service to point every moorning attendency for not present agents
   */
   @Cron(CronExpression.MONDAY_TO_FRIDAY_AT_10PM)
-  async createAbsences() {
+  private async createAbsences() {
     const agentsWithPresenceIds = (await this.getDailyAttendencies()).map(
       (presence) => presence.agentId,
     );
