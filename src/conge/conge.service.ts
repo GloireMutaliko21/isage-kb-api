@@ -123,8 +123,15 @@ export class CongeService {
 
     try {
       const conge = await this.CongeModel.create({
-        data: { ...dto },
+        data: { ...dto, approved: true },
         include: { agent: true },
+      });
+
+      await this.prisma.remDaysConge.create({
+        data: {
+          days: calculateNumberOfDays(conge.startDate, conge.endDate),
+          agentId: conge.agentId,
+        },
       });
 
       this.mailer.sendMail(
