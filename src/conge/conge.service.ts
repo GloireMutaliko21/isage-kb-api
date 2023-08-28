@@ -7,6 +7,7 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateCongeDto } from './dto';
 import { MailService } from '../mail/mail.service';
+import { calculateNumberOfDays } from '../utils/number-of-days';
 
 @Injectable()
 export class CongeService {
@@ -49,12 +50,14 @@ export class CongeService {
   async approuveConge(dto: CreateCongeDto, congeId: string) {
     const conge = await this.CongeModel.findFirst({
       where: {
+        id: congeId,
         agentId: dto.agentId,
         approved: false,
       },
       include: { agent: true },
     });
     if (!conge) throw new BadRequestException('Approve failed');
+
     const approvedConge = await this.CongeModel.update({
       data: {
         approved: true,
@@ -62,6 +65,23 @@ export class CongeService {
       },
       where: {
         id: congeId,
+      },
+      include: {
+        agent: {
+          include: {
+            grade: true,
+          },
+        },
+      },
+    });
+
+    await this.prisma.remDaysConge.create({
+      data: {
+        days: calculateNumberOfDays(
+          approvedConge.startDate,
+          approvedConge.endDate,
+        ),
+        agentId: approvedConge.agentId,
       },
     });
 
