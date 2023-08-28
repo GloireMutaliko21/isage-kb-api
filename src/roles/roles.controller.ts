@@ -25,17 +25,17 @@ export class RolesController {
   }
 
   @Get(':id')
-  getFolderElementById(@Param('id') roleId: string) {
+  getRoleById(@Param('id') roleId: string) {
     return this.roleService.getRoleById(roleId);
   }
 
   @Post()
-  createFolderElement(@Body() dto: CreateRoleDto) {
+  createRole(@Body() dto: CreateRoleDto) {
     return this.roleService.createRole(dto);
   }
 
   @Patch(':id')
-  editFolderElement(@Body() dto: UpdateRoleDto, @Param('id') roleId: string) {
+  editRole(@Body() dto: UpdateRoleDto, @Param('id') roleId: string) {
     return this.roleService.editRole(roleId, dto);
   }
 
@@ -51,7 +51,7 @@ export class RolesController {
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
-  deleteFolderElement(@Param('id') roleId: string) {
+  deleteRole(@Param('id') roleId: string) {
     return this.roleService.deleteRole(roleId);
   }
 }
