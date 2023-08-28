@@ -13,13 +13,13 @@ import {
 } from '@nestjs/common';
 import { GradesService } from './grades.service';
 import { CreateGradeDto, UpdateGradeDto } from './dto';
-import { JwtGuard } from '../auth/guards/jwt.guard';
-import { Roles } from '../roles/decorators/roles.decorator';
-import { Role } from '../roles/enum/role.enum';
+import { JwtGuard } from '../auth/guards';
+import { Roles } from '../roles/decorators';
+import { Role } from '../roles/enum';
 
-@Roles(Role.DuPers)
 @UseGuards(JwtGuard, RolesGuard)
 @Controller('grades')
+@Roles(Role.Admin, Role.DuPers)
 export class GradesController {
   constructor(private gradeService: GradesService) {}
 

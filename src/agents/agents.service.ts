@@ -34,8 +34,6 @@ export class AgentsService {
   }
 
   async getAgentById(agentId: string) {
-    console.log(agentId);
-    // try {
     const agent = await this.AgentModel.findUnique({
       where: { id: agentId },
       include: {
@@ -46,9 +44,6 @@ export class AgentsService {
     });
     if (!agent) throw new ForbiddenException('Agent could not be found');
     return agent;
-    // } catch (error) {
-    //   throw new InternalServerErrorException(error);
-    // }
   }
 
   async createAgent(dto: CreateAgentDto) {

@@ -13,11 +13,14 @@ import {
 } from '@nestjs/common';
 import { FolderElementService } from './folder-element.service';
 import { CreateFolderElementDto, UpdateFolderElementDto } from './dto';
-import { Roles } from '../roles/decorators/roles.decorator';
+import { Roles } from '../roles/decorators';
+import { RolesGuard } from '../roles/guards';
+import { Role } from '../roles/enum';
 
 // @Roles
-@UseGuards(JwtGuard)
+@UseGuards(JwtGuard, RolesGuard)
 @Controller('folder-element')
+@Roles(Role.Admin, Role.DuPers)
 export class FolderElementController {
   constructor(private folderElementService: FolderElementService) {}
 
