@@ -40,7 +40,6 @@ export class AttendencyService {
       agentId: record.agent.id,
       status: 'en conge',
     }));
-    console.log('Attendencies created');
     return this.AttendencyModel.createMany({ data });
   }
 

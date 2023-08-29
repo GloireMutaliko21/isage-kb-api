@@ -14,6 +14,7 @@ import { AuthModule } from './auth/auth.module';
 import { CongeModule } from './conge/conge.module';
 import { AttendencyModule } from './attendency/attendency.module';
 import { AgentFilesModule } from './agent-files/agent-files.module';
+import { SocialCaseModule } from './social-case/social-case.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { AgentFilesModule } from './agent-files/agent-files.module';
     CongeModule,
     AttendencyModule,
     AgentFilesModule,
+    SocialCaseModule,
   ],
 })
 export class AppModule {}
