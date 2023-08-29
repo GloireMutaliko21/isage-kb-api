@@ -62,7 +62,7 @@ export class AgentsService {
       },
     });
     if (existAgent !== null)
-      throw new ConflictException('One or more infrmations already exist');
+      throw new ConflictException('One or more informations already exist');
 
     try {
       const agent = await this.AgentModel.create({
