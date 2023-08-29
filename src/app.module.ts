@@ -13,6 +13,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { AuthModule } from './auth/auth.module';
 import { CongeModule } from './conge/conge.module';
 import { AttendencyModule } from './attendency/attendency.module';
+import { AgentFilesModule } from './agent-files/agent-files.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { AttendencyModule } from './attendency/attendency.module';
     AuthModule,
     CongeModule,
     AttendencyModule,
+    AgentFilesModule,
   ],
 })
 export class AppModule {}
