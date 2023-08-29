@@ -170,6 +170,7 @@ model Folder {
   folderElement   FolderElement @relation(fields: [folderElementId], references: [id])
   folderElementId String
   url             String
+  public_id       String
 
   @@id([agentId, folderElementId])
 }

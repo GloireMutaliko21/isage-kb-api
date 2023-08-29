@@ -13,7 +13,11 @@ export class AgentFilesService {
 
   private readonly FolderModel = this.prisma.folder;
 
-  async createAgentFile(dto: CreateAgentFileDto) {
+  async createAgentFile(
+    dto: CreateAgentFileDto,
+    url: string,
+    public_id: string,
+  ) {
     const existFile = await this.FolderModel.findFirst({
       where: {
         agentId: dto.agentId,
@@ -24,11 +28,15 @@ export class AgentFilesService {
       throw new ConflictException('This agent has alredy this file');
 
     return await this.FolderModel.create({
-      data: { ...dto },
+      data: { ...dto, url, public_id },
     });
   }
 
-  async updateAgentFile(dto: UpdateAgentFileDto) {
+  async updateAgentFile(
+    dto: UpdateAgentFileDto,
+    url: string,
+    public_id: string,
+  ) {
     const file = await this.FolderModel.findFirst({
       where: {
         agentId: dto.agentId,
@@ -37,7 +45,7 @@ export class AgentFilesService {
     });
     if (!file) throw new ForbiddenException('File could not be found');
     return this.FolderModel.update({
-      data: { url: dto.url },
+      data: { url, public_id },
       where: {
         agentId_folderElementId: {
           agentId: dto.agentId,

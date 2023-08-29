@@ -1,15 +1,15 @@
-import { IsOptional, IsString, IsUrl } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, IsUrl } from 'class-validator';
 
 export class UpdateAgentFileDto {
-  @IsUrl()
-  @IsOptional()
-  url?: string;
+  @IsString()
+  @IsNotEmpty()
+  public_id: string;
 
   @IsString()
-  @IsOptional()
-  agentId?: string;
+  @IsNotEmpty()
+  agentId: string;
 
   @IsString()
-  @IsOptional()
-  folderElementId?: string;
+  @IsNotEmpty()
+  folderElementId: string;
 }

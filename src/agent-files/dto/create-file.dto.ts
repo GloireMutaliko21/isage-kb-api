@@ -1,10 +1,6 @@
-import { IsNotEmpty, IsString, IsUrl } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateAgentFileDto {
-  @IsUrl()
-  @IsNotEmpty()
-  url: string;
-
   @IsString()
   @IsNotEmpty()
   agentId: string;

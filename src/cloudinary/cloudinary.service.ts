@@ -42,7 +42,7 @@ export class CloudinaryService {
   }
 
   async delete(publicId: string): Promise<any> {
-    return new Promise((resolve, reject) => {
+    return await new Promise((resolve, reject) => {
       v2.uploader.destroy(publicId, (err, result) => {
         if (err) reject(err);
         else resolve(result);
