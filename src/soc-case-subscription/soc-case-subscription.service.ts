@@ -30,10 +30,9 @@ export class SocCaseSubscriptionService {
 
   getSocialCaseSubscriptions(id: string) {
     return this.SubscriptionModel.findMany({
-      where: { id },
+      where: { casSocId: id },
       include: {
         casSoc: {
-          select: { endDate: true },
           include: {
             agent: {
               select: { names: true },
