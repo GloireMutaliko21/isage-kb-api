@@ -124,8 +124,8 @@ model CasSoc {
 
   description String
   endDate     DateTime
-  status      String
-  validity    String
+  status      String?  @default("unPublished")
+  validity    String?  @default("inProgress")
 
   agent               Agent                @relation(fields: [agentId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   agentId             String
