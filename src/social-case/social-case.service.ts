@@ -82,7 +82,7 @@ export class SocialCaseService {
 
   async publishSocialCase(id: string) {
     const socialCase = await this.CasSocModel.findUnique({
-      where: { id },
+      where: { id, status: 'unPublished' },
     });
     if (!socialCase)
       throw new ForbiddenException('Social case could not be found');
@@ -94,7 +94,7 @@ export class SocialCaseService {
 
   async closeSocialCase(id: string) {
     const socialCase = await this.CasSocModel.findUnique({
-      where: { id },
+      where: { id, status: 'published' },
     });
     if (!socialCase)
       throw new ForbiddenException('Social case could not be found');
