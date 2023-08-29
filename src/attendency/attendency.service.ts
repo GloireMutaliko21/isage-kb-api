@@ -1,9 +1,5 @@
-import {
-  ForbiddenException,
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { ForbiddenException, Injectable } from '@nestjs/common';
+import { Cron } from '@nestjs/schedule';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateAttendencyDto } from './dto';
@@ -17,7 +13,7 @@ export class AttendencyService {
   /* 
     Service to point every moorning attendency for agents on leave with status "en conge"
   */
-  @Cron(CronExpression.MONDAY_TO_FRIDAY_AT_8AM)
+  @Cron('0 8 * * 1-5')
   private async attendenceAgentsInConge() {
     const currentDate = new Date();
 
@@ -165,7 +161,7 @@ export class AttendencyService {
   /* 
     Service to point every moorning attendency for not present agents
   */
-  @Cron(CronExpression.MONDAY_TO_FRIDAY_AT_10PM)
+  @Cron('0 10 * * 1-5')
   private async createAbsences() {
     const agentsWithPresenceIds = (await this.getDailyAttendencies()).map(
       (presence) => presence.agentId,
