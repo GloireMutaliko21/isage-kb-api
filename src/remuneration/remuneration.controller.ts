@@ -14,7 +14,11 @@ import { JwtGuard } from '../auth/guards';
 import { RolesGuard } from '../roles/guards';
 import { Roles } from '../roles/decorators';
 import { Role } from '../roles/enum';
-import { RemJMaladAccDto, SalaryDeductionDto } from './dto';
+import {
+  FamilyAllocationDto,
+  RemJMaladAccDto,
+  SalaryDeductionDto,
+} from './dto';
 
 @UseGuards(JwtGuard, RolesGuard)
 @Controller('remuneration')
@@ -96,5 +100,22 @@ export class RemunerationController {
     @Query('month', ParseIntPipe) month: number,
   ) {
     return this.remunerationService.getPrimeLibelle(agentId, year, month);
+  }
+
+  /*
+    Controllers for payments for primes
+  */
+  @Post('alloc')
+  registerAllocation(@Body() dto: FamilyAllocationDto) {
+    return this.remunerationService.registerAllocation(dto);
+  }
+
+  @Get('alloc/:id')
+  getFamAllocPerAgent(
+    @Param('id') agentId: string,
+    @Query('year', ParseIntPipe) year: number,
+    @Query('month', ParseIntPipe) month: number,
+  ) {
+    return this.remunerationService.getFamAllocPerAgent(agentId, year, month);
   }
 }
