@@ -5,8 +5,8 @@ import {
   FamilyAllocationDto,
   RemJMaladAccDto,
   SalaryDeductionDto,
+  SuppHourDto,
 } from './dto';
-import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class RemunerationService {
@@ -282,6 +282,53 @@ export class RemunerationService {
         days: (days as number) || 0,
         nbEnfant: agentParams.nbEnfant.toNumber(),
         total: total * agentParams.nbEnfant.toNumber() || 0,
+      };
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
+
+  /*
+    Services for payments for days of accidents and sickness
+  */
+  async registerSuppHour(dto: SuppHourDto) {
+    try {
+      return await this.SuppHourModel.create({
+        data: dto,
+        include: { agent: true },
+      });
+    } catch (error) {
+      return new InternalServerErrorException(error);
+    }
+  }
+
+  async getSuppHourAgent(agentId: string, year: number, month: number) {
+    const firstDayOfMonth = new Date(`${year}-${month}-01`);
+    const lastDayOfMonth = new Date(
+      new Date(firstDayOfMonth).setMonth(firstDayOfMonth.getMonth() + 1) - 1,
+    );
+
+    try {
+      const monthlySuppHours = await this.SuppHourModel.findMany({
+        where: {
+          agentId,
+          createdAt: {
+            gte: firstDayOfMonth.toISOString(),
+            lte: lastDayOfMonth.toISOString(),
+          },
+        },
+      });
+      const rate = (await this.getGradeRate(agentId)).rate;
+      let hours: any = 0;
+      let total: any = 0;
+      monthlySuppHours.forEach((rem) => {
+        const remHours = rem.number.toNumber();
+        hours += remHours;
+        total += remHours * rate.heureSupp;
+      });
+      return {
+        hours: (hours as number) || 0,
+        total: total || 0,
       };
     } catch (error) {
       throw new InternalServerErrorException(error);

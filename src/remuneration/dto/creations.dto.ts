@@ -40,3 +40,14 @@ export class FamilyAllocationDto {
   @IsNotEmpty()
   agentId: string;
 }
+
+export class SuppHourDto {
+  @IsNumber()
+  @Min(1)
+  @IsNotEmpty()
+  number: number;
+
+  @IsString()
+  @IsNotEmpty()
+  agentId: string;
+}

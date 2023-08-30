@@ -18,6 +18,7 @@ import {
   FamilyAllocationDto,
   RemJMaladAccDto,
   SalaryDeductionDto,
+  SuppHourDto,
 } from './dto';
 
 @UseGuards(JwtGuard, RolesGuard)
@@ -103,7 +104,7 @@ export class RemunerationController {
   }
 
   /*
-    Controllers for payments for primes
+    Controllers for payments for allocations
   */
   @Post('alloc')
   registerAllocation(@Body() dto: FamilyAllocationDto) {
@@ -117,5 +118,21 @@ export class RemunerationController {
     @Query('month', ParseIntPipe) month: number,
   ) {
     return this.remunerationService.getFamAllocPerAgent(agentId, year, month);
+  }
+
+  /*
+    Controllers for payments for supp hours
+  */
+  @Post('hsupp')
+  registerSuppHour(@Body() dto: SuppHourDto) {
+    return this.remunerationService.registerSuppHour(dto);
+  }
+  @Get('hsupp/:id')
+  getSuppHourAgent(
+    @Param('id') agentId: string,
+    @Query('year', ParseIntPipe) year: number,
+    @Query('month', ParseIntPipe) month: number,
+  ) {
+    return this.remunerationService.getSuppHourAgent(agentId, year, month);
   }
 }
