@@ -23,7 +23,7 @@ import {
 
 @UseGuards(JwtGuard, RolesGuard)
 @Controller('remuneration')
-@Roles(Role.Admin, Role.DuPatr)
+@Roles(Role.Admin, Role.DuPers)
 export class RemunerationController {
   constructor(private readonly remunerationService: RemunerationService) {}
 

@@ -27,7 +27,7 @@ export class AttendencyController {
   }
 
   @Get('monthly')
-  @Roles(Role.Admin, Role.DuPatr)
+  @Roles(Role.Admin, Role.DuPers)
   getMonthlyAttendencie(
     @Query('year', ParseIntPipe) year: number,
     @Query('month', ParseIntPipe) month: number,

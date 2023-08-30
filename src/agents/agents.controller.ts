@@ -20,7 +20,6 @@ import { RolesGuard } from '../roles/guards';
 import { Roles } from '../roles/decorators';
 import { Role } from '../roles/enum';
 
-// @Roles(Role.DuPatr)
 @UseGuards(JwtGuard, RolesGuard)
 @Controller('agents')
 export class AgentsController {
