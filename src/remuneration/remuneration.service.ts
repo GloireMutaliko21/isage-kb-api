@@ -289,7 +289,7 @@ export class RemunerationService {
   }
 
   /*
-    Services for payments for days of accidents and sickness
+    Services for payments for supp hours
   */
   async registerSuppHour(dto: SuppHourDto) {
     try {
@@ -328,6 +328,100 @@ export class RemunerationService {
       });
       return {
         hours: (hours as number) || 0,
+        total: total || 0,
+      };
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
+
+  /*
+    Services for payments for leave days
+  */
+  async registerRemDaysConge(dto: FamilyAllocationDto) {
+    try {
+      return await this.RemDaysCongeModel.create({
+        data: dto,
+        include: { agent: true },
+      });
+    } catch (error) {
+      return new InternalServerErrorException(error);
+    }
+  }
+  // Its return result monthly
+  async getRemDaysCongePerAgent(agentId: string, year: number, month: number) {
+    const firstDayOfMonth = new Date(`${year}-${month}-01`);
+    const lastDayOfMonth = new Date(
+      new Date(firstDayOfMonth).setMonth(firstDayOfMonth.getMonth() + 1) - 1,
+    );
+
+    try {
+      const monthlyDaysConge = await this.RemDaysCongeModel.findMany({
+        where: {
+          agentId,
+          createdAt: {
+            gte: firstDayOfMonth.toISOString(),
+            lte: lastDayOfMonth.toISOString(),
+          },
+        },
+      });
+      const rate = (await this.getGradeRate(agentId)).rate;
+      let days: any = 0;
+      let total: any = 0;
+      monthlyDaysConge.forEach((rem) => {
+        const remDays = rem.days.toNumber();
+        days += remDays;
+        total += remDays * rate.conge;
+      });
+      return {
+        days: (days as number) || 0,
+        total: total || 0,
+      };
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
+
+  /*
+    Services for payments for jours feries
+  */
+  async registerRemDaysFerie(dto: FamilyAllocationDto) {
+    try {
+      return await this.RemDaysFerieModel.create({
+        data: dto,
+        include: { agent: true },
+      });
+    } catch (error) {
+      return new InternalServerErrorException(error);
+    }
+  }
+  // Its return result monthly
+  async getRemDaysFeriePerAgent(agentId: string, year: number, month: number) {
+    const firstDayOfMonth = new Date(`${year}-${month}-01`);
+    const lastDayOfMonth = new Date(
+      new Date(firstDayOfMonth).setMonth(firstDayOfMonth.getMonth() + 1) - 1,
+    );
+
+    try {
+      const monthlyDaysFerie = await this.RemDaysFerieModel.findMany({
+        where: {
+          agentId,
+          createdAt: {
+            gte: firstDayOfMonth.toISOString(),
+            lte: lastDayOfMonth.toISOString(),
+          },
+        },
+      });
+      const rate = (await this.getGradeRate(agentId)).rate;
+      let days: any = 0;
+      let total: any = 0;
+      monthlyDaysFerie.forEach((rem) => {
+        const remDays = rem.days.toNumber();
+        days += remDays;
+        total += remDays * rate.conge;
+      });
+      return {
+        days: (days as number) || 0,
         total: total || 0,
       };
     } catch (error) {

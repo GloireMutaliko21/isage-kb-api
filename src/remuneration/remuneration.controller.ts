@@ -135,4 +135,44 @@ export class RemunerationController {
   ) {
     return this.remunerationService.getSuppHourAgent(agentId, year, month);
   }
+
+  /*
+    Controllers for payments for leave days
+  */
+  @Post('conge')
+  registerRemDaysConge(@Body() dto: FamilyAllocationDto) {
+    return this.remunerationService.registerRemDaysConge(dto);
+  }
+  @Get('conge/:id')
+  getRemDaysCongePerAgent(
+    @Param('id') agentId: string,
+    @Query('year', ParseIntPipe) year: number,
+    @Query('month', ParseIntPipe) month: number,
+  ) {
+    return this.remunerationService.getRemDaysCongePerAgent(
+      agentId,
+      year,
+      month,
+    );
+  }
+
+  /*
+    Controllers for payments for leave days
+  */
+  @Post('ferie')
+  registerRemDaysFerie(@Body() dto: FamilyAllocationDto) {
+    return this.remunerationService.registerRemDaysFerie(dto);
+  }
+  @Get('ferie/:id')
+  getRemDaysFeriePerAgent(
+    @Param('id') agentId: string,
+    @Query('year', ParseIntPipe) year: number,
+    @Query('month', ParseIntPipe) month: number,
+  ) {
+    return this.remunerationService.getRemDaysFeriePerAgent(
+      agentId,
+      year,
+      month,
+    );
+  }
 }
