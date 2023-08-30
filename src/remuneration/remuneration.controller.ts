@@ -43,7 +43,7 @@ export class RemunerationController {
   }
 
   /*
-    Controllers for payments for days of accidents and sickness
+    Controllers for payments of deductions
   */
   @Post('deduc')
   registerSalaryDeduction(@Body() dto: SalaryDeductionDto) {
@@ -70,5 +70,31 @@ export class RemunerationController {
       year,
       month,
     );
+  }
+
+  /*
+    Controllers for payments for primes
+  */
+  @Post('prime')
+  registerPrime(@Body() dto: SalaryDeductionDto) {
+    return this.remunerationService.registerPrime(dto);
+  }
+
+  @Get('prime/:id')
+  getPrimeAgent(
+    @Param('id') agentId: string,
+    @Query('year', ParseIntPipe) year: number,
+    @Query('month', ParseIntPipe) month: number,
+  ) {
+    return this.remunerationService.getPrimeAgent(agentId, year, month);
+  }
+
+  @Get('prime-synth/:id')
+  getPrimeLibelle(
+    @Param('id') agentId: string,
+    @Query('year', ParseIntPipe) year: number,
+    @Query('month', ParseIntPipe) month: number,
+  ) {
+    return this.remunerationService.getPrimeLibelle(agentId, year, month);
   }
 }
