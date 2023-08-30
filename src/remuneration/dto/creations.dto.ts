@@ -14,3 +14,18 @@ export class RemJMaladAccDto {
   @IsNotEmpty()
   agentId: string;
 }
+
+export class SalaryDeductionDto {
+  @IsNumber()
+  @Min(1)
+  @IsNotEmpty()
+  amount: number;
+
+  @IsString()
+  @IsNotEmpty()
+  libelle: string;
+
+  @IsString()
+  @IsNotEmpty()
+  agentId: string;
+}

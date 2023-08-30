@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 
 import { PrismaService } from '../prisma/prisma.service';
-import { RemJMaladAccDto } from './dto';
+import { RemJMaladAccDto, SalaryDeductionDto } from './dto';
 import { Prisma } from '@prisma/client';
 
 @Injectable()
@@ -41,11 +41,15 @@ export class RemunerationService {
   /*
     Services for payments for days of accidents and sickness
   */
-  registerRemMaladAccid(dto: RemJMaladAccDto) {
-    return this.RemJMaladAccModel.create({
-      data: dto,
-      include: { agent: true },
-    });
+  async registerRemMaladAccid(dto: RemJMaladAccDto) {
+    try {
+      return await this.RemJMaladAccModel.create({
+        data: dto,
+        include: { agent: true },
+      });
+    } catch (error) {
+      return new InternalServerErrorException(error);
+    }
   }
   // Its return result monthly
   async getRemMaladAccPerAgent(agentId: string, year: number, month: number) {
@@ -72,9 +76,86 @@ export class RemunerationService {
         days += remDays;
         total += remDays * rate.maladAcc;
       });
-      console.log(typeof days);
       return {
         days: (days as number) || 0,
+        total: total || 0,
+      };
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
+
+  /*
+    Services for payments for salary deductions
+  */
+  async registerSalaryDeduction(dto: SalaryDeductionDto) {
+    try {
+      return await this.SalaryDeductionModel.create({
+        data: dto,
+        include: { agent: true },
+      });
+    } catch (error) {
+      return new InternalServerErrorException(error);
+    }
+  }
+
+  async getSalDeducPerAgent(agentId: string, year: number, month: number) {
+    const firstDayOfMonth = new Date(`${year}-${month}-01`);
+    const lastDayOfMonth = new Date(
+      new Date(firstDayOfMonth).setMonth(firstDayOfMonth.getMonth() + 1) - 1,
+    );
+
+    try {
+      const monthlyMaladAcc = await this.SalaryDeductionModel.findMany({
+        where: {
+          agentId,
+          createdAt: {
+            gte: firstDayOfMonth.toISOString(),
+            lte: lastDayOfMonth.toISOString(),
+          },
+        },
+      });
+      let total: any = 0;
+      monthlyMaladAcc.forEach((rem) => {
+        total += rem.amount.toNumber();
+      });
+      return {
+        total: total || 0,
+      };
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
+
+  async getSalDeducPerAgentLibelle(
+    agentId: string,
+    year: number,
+    month: number,
+  ) {
+    const firstDayOfMonth = new Date(`${year}-${month}-01`);
+    const lastDayOfMonth = new Date(
+      new Date(firstDayOfMonth).setMonth(firstDayOfMonth.getMonth() + 1) - 1,
+    );
+
+    try {
+      const monthlyMaladAcc = await this.SalaryDeductionModel.groupBy({
+        by: 'libelle',
+        where: {
+          agentId,
+          createdAt: {
+            gte: firstDayOfMonth.toISOString(),
+            lte: lastDayOfMonth.toISOString(),
+          },
+        },
+        _sum: {
+          amount: true,
+        },
+      });
+      let total: any = 0;
+      monthlyMaladAcc.forEach((rem) => {
+        total += rem._sum.amount;
+      });
+      return {
         total: total || 0,
       };
     } catch (error) {
