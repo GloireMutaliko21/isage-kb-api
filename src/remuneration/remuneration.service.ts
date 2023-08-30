@@ -1,7 +1,11 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 
 import { PrismaService } from '../prisma/prisma.service';
-import { RemJMaladAccDto, SalaryDeductionDto } from './dto';
+import {
+  FamilyAllocationDto,
+  RemJMaladAccDto,
+  SalaryDeductionDto,
+} from './dto';
 import { Prisma } from '@prisma/client';
 
 @Injectable()
@@ -30,9 +34,13 @@ export class RemunerationService {
           grade: {
             select: { rate: true },
           },
+          nbChildren: true,
         },
       });
-      return agent.grade.rate as Record<string, number>;
+      return {
+        rate: agent.grade.rate as Record<string, number>,
+        nbEnfant: agent.nbChildren,
+      };
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
@@ -68,7 +76,7 @@ export class RemunerationService {
           },
         },
       });
-      const rate = await this.getGradeRate(agentId);
+      const rate = (await this.getGradeRate(agentId)).rate;
       let days: any = 0;
       let total: any = 0;
       monthlyMaladAcc.forEach((rem) => {
@@ -220,6 +228,61 @@ export class RemunerationService {
         },
       });
       return monthlyPrime;
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
+
+  /*
+    Services for payments for family allocations
+  */
+  async registerAllocation(dto: FamilyAllocationDto) {
+    try {
+      return await this.FamilyAllocationModel.create({
+        data: dto,
+        include: { agent: true },
+      });
+    } catch (error) {
+      return new InternalServerErrorException(error);
+    }
+  }
+
+  async getFamAllocPerAgent(agentId: string, year: number, month: number) {
+    const firstDayOfMonth = new Date(`${year}-${month}-01`);
+    const lastDayOfMonth = new Date(
+      new Date(firstDayOfMonth).setMonth(firstDayOfMonth.getMonth() + 1) - 1,
+    );
+
+    try {
+      const monthlyMaladAcc = await this.FamilyAllocationModel.findMany({
+        where: {
+          agentId,
+          createdAt: {
+            gte: firstDayOfMonth.toISOString(),
+            lte: lastDayOfMonth.toISOString(),
+          },
+        },
+        include: {
+          agent: {
+            select: {
+              nbChildren: true,
+            },
+          },
+        },
+      });
+      const agentParams = await this.getGradeRate(agentId);
+      let days: any = 0;
+      let total: any = 0;
+      monthlyMaladAcc.forEach((rem) => {
+        const remDays = rem.days.toNumber();
+        days += remDays;
+        total += remDays * agentParams.rate.alloc;
+      });
+      return {
+        days: (days as number) || 0,
+        nbEnfant: agentParams.nbEnfant.toNumber(),
+        total: total * agentParams.nbEnfant.toNumber() || 0,
+      };
     } catch (error) {
       throw new InternalServerErrorException(error);
     }

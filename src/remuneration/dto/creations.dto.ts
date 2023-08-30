@@ -29,3 +29,14 @@ export class SalaryDeductionDto {
   @IsNotEmpty()
   agentId: string;
 }
+
+export class FamilyAllocationDto {
+  @IsNumber()
+  @Min(1)
+  @IsNotEmpty()
+  days: number;
+
+  @IsString()
+  @IsNotEmpty()
+  agentId: string;
+}
