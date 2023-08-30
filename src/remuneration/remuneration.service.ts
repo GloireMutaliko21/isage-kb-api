@@ -22,7 +22,7 @@ export class RemunerationService {
     This function returns the rates for each agent's grade
   */
 
-  async getGradeRate(agentId: string) {
+  private async getGradeRate(agentId: string) {
     try {
       const agent = await this.prisma.agent.findUnique({
         where: { id: agentId },
@@ -69,12 +69,12 @@ export class RemunerationService {
       let total: any = 0;
       monthlyMaladAcc.forEach((rem) => {
         const remDays = rem.days.toNumber();
-        days = rem.days;
+        days += remDays;
         total += remDays * rate.maladAcc;
       });
-
+      console.log(typeof days);
       return {
-        days: days || 0,
+        days: (days as number) || 0,
         total: total || 0,
       };
     } catch (error) {
