@@ -106,7 +106,7 @@ export class RemunerationService {
     );
 
     try {
-      const monthlyMaladAcc = await this.SalaryDeductionModel.findMany({
+      const monthlyDeduc = await this.SalaryDeductionModel.findMany({
         where: {
           agentId,
           createdAt: {
@@ -116,7 +116,7 @@ export class RemunerationService {
         },
       });
       let total: any = 0;
-      monthlyMaladAcc.forEach((rem) => {
+      monthlyDeduc.forEach((rem) => {
         total += rem.amount.toNumber();
       });
       return {
@@ -138,7 +138,7 @@ export class RemunerationService {
     );
 
     try {
-      const monthlyMaladAcc = await this.SalaryDeductionModel.groupBy({
+      const monthlyDeduc = await this.SalaryDeductionModel.groupBy({
         by: 'libelle',
         where: {
           agentId,
@@ -151,7 +151,75 @@ export class RemunerationService {
           amount: true,
         },
       });
-      return monthlyMaladAcc;
+      return monthlyDeduc;
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
+
+  /*
+    Services for payments for primes
+  */
+  async registerPrime(dto: SalaryDeductionDto) {
+    try {
+      return await this.PrimeModel.create({
+        data: dto,
+        include: { agent: true },
+      });
+    } catch (error) {
+      return new InternalServerErrorException(error);
+    }
+  }
+
+  async getPrimeAgent(agentId: string, year: number, month: number) {
+    const firstDayOfMonth = new Date(`${year}-${month}-01`);
+    const lastDayOfMonth = new Date(
+      new Date(firstDayOfMonth).setMonth(firstDayOfMonth.getMonth() + 1) - 1,
+    );
+
+    try {
+      const monthlyPrime = await this.PrimeModel.findMany({
+        where: {
+          agentId,
+          createdAt: {
+            gte: firstDayOfMonth.toISOString(),
+            lte: lastDayOfMonth.toISOString(),
+          },
+        },
+      });
+      let total: any = 0;
+      monthlyPrime.forEach((rem) => {
+        total += rem.amount.toNumber();
+      });
+      return {
+        total: total || 0,
+      };
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
+
+  async getPrimeLibelle(agentId: string, year: number, month: number) {
+    const firstDayOfMonth = new Date(`${year}-${month}-01`);
+    const lastDayOfMonth = new Date(
+      new Date(firstDayOfMonth).setMonth(firstDayOfMonth.getMonth() + 1) - 1,
+    );
+
+    try {
+      const monthlyPrime = await this.PrimeModel.groupBy({
+        by: 'libelle',
+        where: {
+          agentId,
+          createdAt: {
+            gte: firstDayOfMonth.toISOString(),
+            lte: lastDayOfMonth.toISOString(),
+          },
+        },
+        _sum: {
+          amount: true,
+        },
+      });
+      return monthlyPrime;
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
