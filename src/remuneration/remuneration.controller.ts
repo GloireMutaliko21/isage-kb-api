@@ -14,7 +14,7 @@ import { JwtGuard } from '../auth/guards';
 import { RolesGuard } from '../roles/guards';
 import { Roles } from '../roles/decorators';
 import { Role } from '../roles/enum';
-import { RemJMaladAccDto } from './dto';
+import { RemJMaladAccDto, SalaryDeductionDto } from './dto';
 
 @UseGuards(JwtGuard, RolesGuard)
 @Controller('remuneration')
@@ -36,6 +36,36 @@ export class RemunerationController {
     @Query('month', ParseIntPipe) month: number,
   ) {
     return this.remunerationService.getRemMaladAccPerAgent(
+      agentId,
+      year,
+      month,
+    );
+  }
+
+  /*
+    Controllers for payments for days of accidents and sickness
+  */
+  @Post('deduc')
+  registerSalaryDeduction(@Body() dto: SalaryDeductionDto) {
+    return this.remunerationService.registerSalaryDeduction(dto);
+  }
+
+  @Get('deduc/:id')
+  getSalDeducPerAgent(
+    @Param('id') agentId: string,
+    @Query('year', ParseIntPipe) year: number,
+    @Query('month', ParseIntPipe) month: number,
+  ) {
+    return this.remunerationService.getSalDeducPerAgent(agentId, year, month);
+  }
+
+  @Get('deduc-synth/:id')
+  getSalDeducPerAgentLibelle(
+    @Param('id') agentId: string,
+    @Query('year', ParseIntPipe) year: number,
+    @Query('month', ParseIntPipe) month: number,
+  ) {
+    return this.remunerationService.getSalDeducPerAgentLibelle(
       agentId,
       year,
       month,

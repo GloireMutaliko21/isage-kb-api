@@ -151,13 +151,7 @@ export class RemunerationService {
           amount: true,
         },
       });
-      let total: any = 0;
-      monthlyMaladAcc.forEach((rem) => {
-        total += rem._sum.amount;
-      });
-      return {
-        total: total || 0,
-      };
+      return monthlyMaladAcc;
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
