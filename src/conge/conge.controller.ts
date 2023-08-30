@@ -38,7 +38,7 @@ export class CongeController {
   }
 
   @Patch(':id')
-  @Roles(Role.Admin, Role.DuPatr)
+  @Roles(Role.Admin, Role.DuPers)
   approuveConge(@Param('id') congeId: string, @Body() dto: CreateCongeDto) {
     return this.congeService.approuveConge(dto, congeId);
   }
