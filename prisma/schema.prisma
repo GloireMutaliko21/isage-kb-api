@@ -31,12 +31,13 @@ model Agent {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  names     String
-  email     String @unique
-  matricule String @unique
-  sex       String
-  function  String
-  status    String
+  names      String
+  email      String   @unique
+  matricule  String   @unique
+  sex        String
+  function   String
+  status     String
+  nbChildren Decimal? @default(0)
 
   birthDate DateTime
   engagDate DateTime
@@ -203,12 +204,13 @@ model RemJMaladAcc {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  days Decimal
+  days    Decimal
+  libelle String
 
   agent   Agent  @relation(fields: [agentId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   agentId String
 
-  @@map("remJMaladAccs")
+  @@map("remjmaladaccs")
 }
 
 // models pour enregistrer les details sur les remunerations : Deductions sur salaire
@@ -247,8 +249,7 @@ model FamilyAllocation {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  days       Decimal
-  nbChildren Decimal
+  days Decimal
 
   agent   Agent  @relation(fields: [agentId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   agentId String
