@@ -203,12 +203,13 @@ model RemJMaladAcc {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  days Decimal
+  days    Decimal
+  libelle String
 
   agent   Agent  @relation(fields: [agentId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   agentId String
 
-  @@map("remJMaladAccs")
+  @@map("remjmaladaccs")
 }
 
 // models pour enregistrer les details sur les remunerations : Deductions sur salaire

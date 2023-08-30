@@ -16,6 +16,7 @@ import { AttendencyModule } from './attendency/attendency.module';
 import { AgentFilesModule } from './agent-files/agent-files.module';
 import { SocialCaseModule } from './social-case/social-case.module';
 import { SocCaseSubscriptionModule } from './soc-case-subscription/soc-case-subscription.module';
+import { RemunerationModule } from './remuneration/remuneration.module';
 
 @Module({
   imports: [
@@ -43,6 +44,8 @@ import { SocCaseSubscriptionModule } from './soc-case-subscription/soc-case-subs
     AgentFilesModule,
     SocialCaseModule,
     SocCaseSubscriptionModule,
+    RemunerationModule,
   ],
+  providers: [],
 })
 export class AppModule {}
