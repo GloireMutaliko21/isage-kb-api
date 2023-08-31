@@ -535,6 +535,11 @@ export class RemunerationService {
         },
         include: { agent: true },
       });
+      if (!paySlip)
+        return {
+          message: 'Agent not paid for this month',
+          data: {},
+        };
       return paySlip;
     } catch (error) {}
   }
@@ -570,11 +575,11 @@ export class RemunerationService {
         const suppHours = paySlip.supHours as Record<string, number>;
         const ferie = paySlip.jFeries as Record<string, number>;
         const conge = paySlip.jConge as Record<string, number>;
-        const primes = paySlip.primes as Array<number>;
-        const deductions = paySlip.deductions as Array<number>;
+        const primes = paySlip.primes as Record<string, number>;
+        const deductions = paySlip.deductions as Record<string, number>;
         const alloc = paySlip.alloc as Record<string, number>;
         const maladie = paySlip.jMaldAcc as Record<string, number>;
-
+        console.log(primes);
         return {
           names: paySlip.agent.names,
           grade: paySlip.agent.grade.title,
@@ -582,9 +587,9 @@ export class RemunerationService {
           suppHours: suppHours?.hours * suppHours?.rate,
           ferie: ferie?.days * ferie?.rate,
           conge: conge?.days * conge?.rate,
-          primes: primes.reduce((a, r) => a + r, 0),
-          deduction: deductions.reduce((a, r) => a + r, 0),
-          alloc: alloc?.rate * alloc?.days * alloc?.nbChildren,
+          primes: Object.values(primes).reduce((a, r) => a + r, 0),
+          deduction: Object.values(deductions).reduce((a, r) => a + r, 0),
+          alloc: alloc?.rate * alloc?.days * alloc?.children,
           maladie: maladie?.days * maladie?.rate,
         };
       });
