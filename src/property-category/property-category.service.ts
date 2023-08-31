@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   ForbiddenException,
   Injectable,
   InternalServerErrorException,
@@ -13,6 +14,13 @@ export class PropertyCategoryService {
 
   async createCategory(dto: CreateCatgoryDto) {
     try {
+      const isExists = await this.CategoryModel.findFirst({
+        where: { libelle: dto.libelle },
+      });
+      if (isExists)
+        throw new ConflictException(
+          'Category with this libelle already exists',
+        );
       return await this.CategoryModel.create({
         data: dto,
       });
@@ -53,14 +61,25 @@ export class PropertyCategoryService {
   }
 
   async updateCategory(dto: CreateCatgoryDto, id: string) {
-    const category = await this.CategoryModel.findUnique({
-      where: { id },
-    });
-    if (!category)
-      throw new ForbiddenException('Category with this id not found');
-    return await this.CategoryModel.update({
-      data: dto,
-      where: { id },
-    });
+    try {
+      const isExists = await this.CategoryModel.findFirst({
+        where: { libelle: dto.libelle },
+      });
+      if (isExists)
+        throw new ConflictException(
+          'Category with this libelle already exists',
+        );
+      const category = await this.CategoryModel.findUnique({
+        where: { id },
+      });
+      if (!category)
+        throw new ForbiddenException('Category with this id not found');
+      return await this.CategoryModel.update({
+        data: dto,
+        where: { id },
+      });
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 }

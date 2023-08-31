@@ -308,7 +308,7 @@ model Category {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  libelle String
+  libelle String @unique
 
   articles        Article[]
   immobilisations Immobilisation[]
@@ -322,7 +322,7 @@ model Unity {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  libelle String
+  libelle String @unique
 
   articles Article[]
 
@@ -347,7 +347,7 @@ model Article {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  libelle    String
+  libelle    String  @unique
   qty        Decimal
   stockAlert Decimal
 

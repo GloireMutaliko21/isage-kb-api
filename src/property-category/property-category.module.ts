@@ -4,6 +4,6 @@ import { PropertyCategoryController } from './property-category.controller';
 
 @Module({
   providers: [PropertyCategoryService],
-  controllers: [PropertyCategoryController]
+  controllers: [PropertyCategoryController],
 })
 export class PropertyCategoryModule {}
