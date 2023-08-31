@@ -1,7 +1,13 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 
 import { PrismaService } from '../prisma/prisma.service';
 import {
+  CreatePaySlipDto,
   FamilyAllocationDto,
   RemJMaladAccDto,
   SalaryDeductionDto,
@@ -32,12 +38,13 @@ export class RemunerationService {
         where: { id: agentId },
         select: {
           grade: {
-            select: { rate: true },
+            select: { rate: true, baseSalary: true },
           },
           nbChildren: true,
         },
       });
       return {
+        baseSalaty: agent.grade.baseSalary,
         rate: agent.grade.rate as Record<string, number>,
         nbEnfant: agent.nbChildren,
       };
@@ -418,12 +425,175 @@ export class RemunerationService {
       monthlyDaysFerie.forEach((rem) => {
         const remDays = rem.days.toNumber();
         days += remDays;
-        total += remDays * rate.conge;
+        total += remDays * rate.ferie;
       });
       return {
         days: (days as number) || 0,
         total: total || 0,
       };
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
+
+  /*
+    Fiche et liste de paie et situations paie
+  */
+
+  async registerPaySlip(dto: CreatePaySlipDto) {
+    const { year, month, agentId } = dto;
+    const existPaySlip = await this.FichePaieModel.findFirst({
+      where: {
+        month: `${year}-${month}`,
+        agentId: dto.agentId,
+      },
+    });
+
+    if (existPaySlip)
+      throw new ConflictException('This agent is already paied for this month');
+    try {
+      const rates = await this.getGradeRate(agentId);
+
+      const primesData = await this.getPrimeLibelle(agentId, year, month);
+      const primesFormattedData = {};
+
+      const deductionsData = await this.getSalDeducPerAgentLibelle(
+        agentId,
+        year,
+        month,
+      );
+      const deductionsFormattedData = {};
+
+      primesData.forEach((prime) => {
+        const libelle = prime.libelle;
+        const amount = prime._sum.amount.toNumber();
+
+        primesFormattedData[libelle] = amount;
+      });
+
+      deductionsData.forEach((deductions) => {
+        const libelle = deductions.libelle;
+        const amount = deductions._sum.amount;
+
+        deductionsFormattedData[libelle] = amount;
+      });
+
+      const paySlip = await this.FichePaieModel.create({
+        data: {
+          month: `${year}-${month}`,
+          baseSalary: {
+            base: rates.baseSalaty,
+            rate: rates.rate.base,
+          },
+          supHours: {
+            hours: (await this.getSuppHourAgent(agentId, year, month)).hours,
+            rate: rates.rate.heureSupp,
+          },
+          jFeries: {
+            days: (
+              await this.getRemDaysFeriePerAgent(agentId, year, month)
+            ).days,
+            rate: rates.rate.ferie,
+          },
+          jConge: {
+            days: (
+              await this.getRemDaysCongePerAgent(agentId, year, month)
+            ).days,
+            rate: rates.rate.conge,
+          },
+          primes: primesFormattedData,
+          deductions: deductionsFormattedData,
+          alloc: {
+            children: rates.nbEnfant,
+            days: (await this.getFamAllocPerAgent(agentId, year, month)).days,
+            rate: rates.rate.alloc,
+          },
+          jMaldAcc: {
+            days: (
+              await this.getRemMaladAccPerAgent(agentId, year, month)
+            ).days,
+            rate: rates.rate.maladAcc,
+          },
+          agentId,
+        },
+        include: {
+          agent: true,
+        },
+      });
+      return paySlip;
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
+
+  async getPaySlipPerAgent(agentId: string, year: number, month: number) {
+    try {
+      const paySlip = await this.FichePaieModel.findFirst({
+        where: {
+          agentId,
+          month: `${year}-${month}`,
+        },
+        include: { agent: true },
+      });
+      if (!paySlip)
+        return {
+          message: 'Agent not paid for this month',
+          data: {},
+        };
+      return paySlip;
+    } catch (error) {}
+  }
+
+  async getPayList(year: number, month: number) {
+    try {
+      const payList = await this.FichePaieModel.findMany({
+        select: {
+          baseSalary: true,
+          supHours: true,
+          jFeries: true,
+          jConge: true,
+          primes: true,
+          deductions: true,
+          alloc: true,
+          jMaldAcc: true,
+          agent: {
+            select: {
+              names: true,
+              grade: {
+                select: { title: true },
+              },
+            },
+          },
+        },
+        where: { month: `${year}-${month}` },
+      });
+      if (!payList)
+        throw new BadRequestException('None pay slip founded for this month');
+
+      const formattedPayList = payList.map((paySlip) => {
+        const salary = paySlip.baseSalary as Record<string, number>;
+        const suppHours = paySlip.supHours as Record<string, number>;
+        const ferie = paySlip.jFeries as Record<string, number>;
+        const conge = paySlip.jConge as Record<string, number>;
+        const primes = paySlip.primes as Record<string, number>;
+        const deductions = paySlip.deductions as Record<string, number>;
+        const alloc = paySlip.alloc as Record<string, number>;
+        const maladie = paySlip.jMaldAcc as Record<string, number>;
+        console.log(primes);
+        return {
+          names: paySlip.agent.names,
+          grade: paySlip.agent.grade.title,
+          salary: salary?.base * salary?.rate,
+          suppHours: suppHours?.hours * suppHours?.rate,
+          ferie: ferie?.days * ferie?.rate,
+          conge: conge?.days * conge?.rate,
+          primes: Object.values(primes).reduce((a, r) => a + r, 0),
+          deduction: Object.values(deductions).reduce((a, r) => a + r, 0),
+          alloc: alloc?.rate * alloc?.days * alloc?.children,
+          maladie: maladie?.days * maladie?.rate,
+        };
+      });
+      return formattedPayList;
     } catch (error) {
       throw new InternalServerErrorException(error);
     }

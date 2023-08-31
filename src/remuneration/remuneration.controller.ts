@@ -15,6 +15,7 @@ import { RolesGuard } from '../roles/guards';
 import { Roles } from '../roles/decorators';
 import { Role } from '../roles/enum';
 import {
+  CreatePaySlipDto,
   FamilyAllocationDto,
   RemJMaladAccDto,
   SalaryDeductionDto,
@@ -174,5 +175,31 @@ export class RemunerationController {
       year,
       month,
     );
+  }
+
+  /*
+    Controllers pay slip and pay list
+  */
+
+  @Post('payslip')
+  registerPaySlip(@Body() dto: CreatePaySlipDto) {
+    return this.remunerationService.registerPaySlip(dto);
+  }
+
+  @Get('paylist')
+  getPayList(
+    @Query('year', ParseIntPipe) year: number,
+    @Query('month', ParseIntPipe) month: number,
+  ) {
+    return this.remunerationService.getPayList(year, month);
+  }
+
+  @Get('payslip/:id')
+  getPaySlipPerAgent(
+    @Param('id') agentId: string,
+    @Query('year', ParseIntPipe) year: number,
+    @Query('month', ParseIntPipe) month: number,
+  ) {
+    return this.remunerationService.getPaySlipPerAgent(agentId, year, month);
   }
 }
