@@ -598,4 +598,107 @@ export class RemunerationService {
       throw new InternalServerErrorException(error);
     }
   }
+
+  async getUnpaidAgents(year: number, month: number) {
+    const firstDayOfMonth = new Date(`${year}-${month}-01`);
+    const lastDayOfMonth = new Date(
+      new Date(firstDayOfMonth).setMonth(firstDayOfMonth.getMonth() + 1) - 1,
+    );
+    try {
+      const paidAgents = await this.FichePaieModel.findMany({
+        select: { agentId: true },
+        where: { month: `${year}-${month}` },
+      });
+      const agents = await this.prisma.agent.findMany({
+        where: {
+          NOT: {
+            id: {
+              in: paidAgents.map((r) => r.agentId),
+            },
+          },
+        },
+        select: {
+          names: true,
+          grade: {
+            select: {
+              title: true,
+              baseSalary: true,
+              rate: true,
+            },
+          },
+          primes: {
+            select: { amount: true },
+            where: {
+              createdAt: {
+                gte: firstDayOfMonth.toISOString(),
+                lte: lastDayOfMonth.toISOString(),
+              },
+            },
+          },
+          suppHours: {
+            select: { number: true },
+            where: {
+              createdAt: {
+                gte: firstDayOfMonth.toISOString(),
+                lte: lastDayOfMonth.toISOString(),
+              },
+            },
+          },
+          remJMaladAccs: {
+            select: { days: true },
+            where: {
+              createdAt: {
+                gte: firstDayOfMonth.toISOString(),
+                lte: lastDayOfMonth.toISOString(),
+              },
+            },
+          },
+          remJoursConges: {
+            select: { days: true },
+            where: {
+              createdAt: {
+                gte: firstDayOfMonth.toISOString(),
+                lte: lastDayOfMonth.toISOString(),
+              },
+            },
+          },
+          remJoursFerie: {
+            select: { days: true },
+            where: {
+              createdAt: {
+                gte: firstDayOfMonth.toISOString(),
+                lte: lastDayOfMonth.toISOString(),
+              },
+            },
+          },
+          salaryDeductions: {
+            select: { amount: true },
+            where: {
+              createdAt: {
+                gte: firstDayOfMonth.toISOString(),
+                lte: lastDayOfMonth.toISOString(),
+              },
+            },
+          },
+          familyAllocations: {
+            select: { days: true },
+            where: {
+              createdAt: {
+                gte: firstDayOfMonth.toISOString(),
+                lte: lastDayOfMonth.toISOString(),
+              },
+            },
+          },
+        },
+      });
+      if (agents.length < 1)
+        return {
+          message: 'All agents already paid',
+          data: [],
+        };
+      return agents;
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
 }

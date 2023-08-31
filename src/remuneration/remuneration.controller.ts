@@ -194,6 +194,14 @@ export class RemunerationController {
     return this.remunerationService.getPayList(year, month);
   }
 
+  @Get('unpaid')
+  getUnpaidAgents(
+    @Query('year', ParseIntPipe) year: number,
+    @Query('month', ParseIntPipe) month: number,
+  ) {
+    return this.remunerationService.getUnpaidAgents(year, month);
+  }
+
   @Get('payslip/:id')
   getPaySlipPerAgent(
     @Param('id') agentId: string,
