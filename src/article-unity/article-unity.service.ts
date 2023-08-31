@@ -22,7 +22,9 @@ export class ArticleUnityService {
       return await this.UnityModel.create({
         data: dto,
       });
-    } catch (error) {}
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 
   async getUnities() {

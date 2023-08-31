@@ -4,6 +4,6 @@ import { ArticleUnityController } from './article-unity.controller';
 
 @Module({
   providers: [ArticleUnityService],
-  controllers: [ArticleUnityController]
+  controllers: [ArticleUnityController],
 })
 export class ArticleUnityModule {}
