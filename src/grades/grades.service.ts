@@ -7,8 +7,8 @@ export class GradesService {
   constructor(private prisma: PrismaService) {}
   private GradeModel = this.prisma.grade;
 
-  getGrades() {
-    return this.GradeModel.findMany({ include: { agents: true } });
+  async getGrades() {
+    return await this.GradeModel.findMany({ include: { agents: true } });
   }
 
   async getGradeById(gradeId: string) {
@@ -32,7 +32,7 @@ export class GradesService {
       where: { id: gradeId },
     });
     if (!grade) throw new ForbiddenException('Grade could not be found');
-    return this.GradeModel.update({
+    return await this.GradeModel.update({
       data: { ...dto },
       where: { id: gradeId },
       include: { agents: true },
@@ -44,6 +44,6 @@ export class GradesService {
       where: { id: gradeId },
     });
     if (!grade) throw new ForbiddenException('Grade could not be found');
-    return this.GradeModel.delete({ where: { id: gradeId } });
+    return await this.GradeModel.delete({ where: { id: gradeId } });
   }
 }

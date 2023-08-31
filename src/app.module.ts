@@ -17,6 +17,7 @@ import { AgentFilesModule } from './agent-files/agent-files.module';
 import { SocialCaseModule } from './social-case/social-case.module';
 import { SocCaseSubscriptionModule } from './soc-case-subscription/soc-case-subscription.module';
 import { RemunerationModule } from './remuneration/remuneration.module';
+import { PropertyCategoryModule } from './property-category/property-category.module';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { RemunerationModule } from './remuneration/remuneration.module';
     SocialCaseModule,
     SocCaseSubscriptionModule,
     RemunerationModule,
+    PropertyCategoryModule,
   ],
   providers: [],
 })
