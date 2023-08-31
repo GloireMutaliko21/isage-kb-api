@@ -19,6 +19,7 @@ import { SocCaseSubscriptionModule } from './soc-case-subscription/soc-case-subs
 import { RemunerationModule } from './remuneration/remuneration.module';
 import { PropertyCategoryModule } from './property-category/property-category.module';
 import { ArticleUnityModule } from './article-unity/article-unity.module';
+import { ServiceSectionModule } from './service-section/service-section.module';
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { ArticleUnityModule } from './article-unity/article-unity.module';
     RemunerationModule,
     PropertyCategoryModule,
     ArticleUnityModule,
+    ServiceSectionModule,
   ],
   providers: [],
 })
