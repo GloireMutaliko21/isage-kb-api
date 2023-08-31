@@ -26,6 +26,7 @@ export class AttendencyService {
         endDate: {
           gte: currentDate,
         },
+        approved: true,
         agentId: {
           notIn: agentsWithPresenceIds,
         },
@@ -172,6 +173,7 @@ export class AttendencyService {
         endDate: {
           gte: currentDate,
         },
+        approved: true,
       },
       select: {
         agent: true,

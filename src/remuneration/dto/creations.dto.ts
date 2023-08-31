@@ -51,3 +51,17 @@ export class SuppHourDto {
   @IsNotEmpty()
   agentId: string;
 }
+
+export class CreatePaySlipDto {
+  @IsNumber()
+  @IsNotEmpty()
+  year: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  month: number;
+
+  @IsString()
+  @IsNotEmpty()
+  agentId: string;
+}
