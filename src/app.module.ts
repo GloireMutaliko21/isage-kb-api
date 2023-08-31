@@ -20,6 +20,7 @@ import { RemunerationModule } from './remuneration/remuneration.module';
 import { PropertyCategoryModule } from './property-category/property-category.module';
 import { ArticleUnityModule } from './article-unity/article-unity.module';
 import { ServiceSectionModule } from './service-section/service-section.module';
+import { ImmobilisationModule } from './immobilisation/immobilisation.module';
 
 @Module({
   imports: [
@@ -51,6 +52,7 @@ import { ServiceSectionModule } from './service-section/service-section.module';
     PropertyCategoryModule,
     ArticleUnityModule,
     ServiceSectionModule,
+    ImmobilisationModule,
   ],
   providers: [],
 })

@@ -403,7 +403,7 @@ model Immobilisation {
   valDepart    Decimal
   duration     Decimal
   vnc          Decimal
-  amortissDate DateTime
+  amortissDate DateTime? @default(now())
 
   category   Category @relation(fields: [categoryId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   categoryId String
