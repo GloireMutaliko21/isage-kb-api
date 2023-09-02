@@ -1,6 +1,7 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateImmob } from './dto';
+import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class ImmobilisationService {
@@ -32,7 +33,7 @@ export class ImmobilisationService {
 
   async getAllAmortImmobs() {
     try {
-      const biens = await this.prisma.$queryRaw`
+      const immobs = await this.prisma.$queryRaw`
          SELECT 
 
             immobilisations."libelle", 
@@ -61,7 +62,39 @@ export class ImmobilisationService {
               ) / 12
             ) >= "duration"
       `;
-      return biens;
+      return immobs;
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
+
+  @Cron('0 0 * * *')
+  private async updateVnc() {
+    try {
+      const immobs = await this.prisma.$queryRaw`
+        UPDATE "immobilisations"
+
+        SET 
+          vnc = (
+            "vnc" - (
+              CASE
+                WHEN "vnc" = "valDepart" THEN "vnc"/"duration"
+                ELSE ("vnc"/("duration" - EXTRACT(year FROM age("createdAt"))))
+              END
+            )
+          ),
+          "amortissDate" = NOW()
+        
+        WHERE 
+          CASE
+            WHEN "vnc" = "valDepart" THEN
+              EXTRACT (year FROM age("createdAt")) >= 1
+            ELSE 
+              EXTRACT(year FROM age("amortissDate")) >= 1
+          END
+        ;
+      `;
+      return immobs;
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
