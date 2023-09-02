@@ -385,7 +385,8 @@ model Commande {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  qty Decimal
+  qty    Decimal
+  status String  @default("tobuy")
 
   article   Article @relation(fields: [articleId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   articleId String

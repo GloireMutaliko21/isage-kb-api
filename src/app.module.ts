@@ -22,6 +22,7 @@ import { ArticleUnityModule } from './article-unity/article-unity.module';
 import { ServiceSectionModule } from './service-section/service-section.module';
 import { ImmobilisationModule } from './immobilisation/immobilisation.module';
 import { ArticleModule } from './article/article.module';
+import { OrderModule } from './order/order.module';
 
 @Module({
   imports: [
@@ -55,6 +56,7 @@ import { ArticleModule } from './article/article.module';
     ServiceSectionModule,
     ImmobilisationModule,
     ArticleModule,
+    OrderModule,
   ],
   providers: [],
 })
