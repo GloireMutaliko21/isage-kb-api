@@ -57,6 +57,26 @@ export class OrderService {
   async getOrders() {
     try {
       return this.OrderModel.findMany({
+        where: {
+          status: {
+            not: 'closed',
+          },
+        },
+        include: {
+          article: true,
+        },
+      });
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
+
+  async getHostoricClosed() {
+    try {
+      return this.OrderModel.findMany({
+        where: {
+          status: 'closed',
+        },
         include: {
           article: true,
         },
