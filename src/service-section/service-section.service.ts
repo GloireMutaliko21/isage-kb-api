@@ -29,7 +29,7 @@ export class ServiceSectionService {
 
   async getServices() {
     try {
-      return this.ServiceModel.findMany({
+      return await this.ServiceModel.findMany({
         include: {
           immobilisations: true,
         },

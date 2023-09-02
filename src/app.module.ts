@@ -21,6 +21,7 @@ import { PropertyCategoryModule } from './property-category/property-category.mo
 import { ArticleUnityModule } from './article-unity/article-unity.module';
 import { ServiceSectionModule } from './service-section/service-section.module';
 import { ImmobilisationModule } from './immobilisation/immobilisation.module';
+import { ArticleModule } from './article/article.module';
 
 @Module({
   imports: [
@@ -53,6 +54,7 @@ import { ImmobilisationModule } from './immobilisation/immobilisation.module';
     ArticleUnityModule,
     ServiceSectionModule,
     ImmobilisationModule,
+    ArticleModule,
   ],
   providers: [],
 })

@@ -348,7 +348,7 @@ model Article {
   updatedAt DateTime @updatedAt
 
   libelle    String  @unique
-  qty        Decimal
+  qty        Decimal @default(0)
   stockAlert Decimal
 
   category   Category @relation(fields: [categoryId], references: [id], onDelete: Restrict, onUpdate: Cascade)
