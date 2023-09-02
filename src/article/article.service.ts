@@ -46,10 +46,32 @@ export class ArticleService {
 
   async articlesPerCateg() {
     try {
+      // With prisma, all category will be returned
+      // return await this.prisma.category.findMany({
+      //   select: {
+      //     libelle: true,
+      //     articles: {
+      //       select: {
+      //         libelle: true,
+      //         qty: true,
+      //       },
+      //     },
+      //   },
+      //   orderBy: {
+      //     libelle: 'asc',
+      //   },
+      // });
+
+      // SQL Query only categorie with at least one article
       return await this.prisma.$queryRaw`
         SELECT 
           categories."libelle" AS categorie,
-          array_agg(articles."libelle") AS articles
+          json_agg(
+            json_build_object(
+              'libelle', articles."libelle", 
+              'qte', articles."qty"
+            )
+          ) AS articles
         FROM articles
 
         INNER JOIN categories ON

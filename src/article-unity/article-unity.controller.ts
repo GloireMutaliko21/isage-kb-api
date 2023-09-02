@@ -17,7 +17,7 @@ import { CreateCatgoryDto } from '../property-category/dto';
 
 @UseGuards(JwtGuard, RolesGuard)
 @Controller('unity')
-@Roles(Role.Admin, Role.DuPatr)
+@Roles(Role.Admin, Role.DuPers)
 export class ArticleUnityController {
   constructor(private readonly unityService: ArticleUnityService) {}
 
