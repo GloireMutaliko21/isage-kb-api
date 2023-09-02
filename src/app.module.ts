@@ -23,6 +23,7 @@ import { ServiceSectionModule } from './service-section/service-section.module';
 import { ImmobilisationModule } from './immobilisation/immobilisation.module';
 import { ArticleModule } from './article/article.module';
 import { OrderModule } from './order/order.module';
+import { InventaireModule } from './inventaire/inventaire.module';
 
 @Module({
   imports: [
@@ -57,6 +58,7 @@ import { OrderModule } from './order/order.module';
     ImmobilisationModule,
     ArticleModule,
     OrderModule,
+    InventaireModule,
   ],
   providers: [],
 })
