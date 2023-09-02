@@ -164,7 +164,42 @@ export class InventaireService {
       `;
       return stockSheet;
     } catch (error) {
-      console.log(error);
+      throw new InternalServerErrorException(error);
+    }
+  }
+
+  async getGlobalHistoricByArticle(start: any, end: any, articleId: string) {
+    try {
+      const stockSheet = await this.prisma.$queryRaw`
+        SELECT
+          o."typeOp",
+          json_agg(
+            json_build_object(
+              'date', o."dateOp",
+              'libelle', a."libelle",
+              'qte', o."qty",
+              'designation', a."libelle"
+            )
+          ) AS data
+        FROM
+          articles a
+        LEFT JOIN
+          operations o ON a."id" = o."articleId"
+        WHERE
+          o."dateOp"
+            BETWEEN
+              ${start}
+            AND
+              ${end}
+          AND
+            o."articleId" = ${articleId}
+        GROUP BY
+          a."libelle", a."qty", o."typeOp"
+        ORDER BY
+          o."typeOp" ASC;
+      `;
+      return stockSheet;
+    } catch (error) {
       throw new InternalServerErrorException(error);
     }
   }

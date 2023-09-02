@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 
 import { JwtGuard } from '../auth/guards';
 import { RolesGuard } from '../roles/guards';
@@ -40,5 +48,14 @@ export class InventaireController {
     @Query('end', ParseDatePipe) end: string,
   ) {
     return this.inventaireService.getGlobalHistoric(start, end);
+  }
+
+  @Get(':id')
+  getGlobalHistoricByArticle(
+    @Param('id') id: string,
+    @Query('start', ParseDatePipe) start: string,
+    @Query('end', ParseDatePipe) end: string,
+  ) {
+    return this.inventaireService.getGlobalHistoricByArticle(start, end, id);
   }
 }
