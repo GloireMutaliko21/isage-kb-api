@@ -30,7 +30,7 @@ export class OrderService {
         where: { id },
       });
       if (!order) throw new ForbiddenException('Order could not be found');
-      return this.OrderModel.update({
+      return await this.OrderModel.update({
         data: { status: 'closed' },
         where: { id },
       });
@@ -45,7 +45,7 @@ export class OrderService {
         where: { id },
       });
       if (!order) throw new ForbiddenException('Order could not be found');
-      return this.OrderModel.update({
+      return await this.OrderModel.update({
         data: { status: 'canceled' },
         where: { id },
       });
@@ -56,7 +56,7 @@ export class OrderService {
 
   async getOrders() {
     try {
-      return this.OrderModel.findMany({
+      return await this.OrderModel.findMany({
         where: {
           status: {
             not: 'closed',
@@ -73,7 +73,7 @@ export class OrderService {
 
   async getHostoricClosed() {
     try {
-      return this.OrderModel.findMany({
+      return await this.OrderModel.findMany({
         where: {
           status: 'closed',
         },

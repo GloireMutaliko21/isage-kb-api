@@ -24,43 +24,51 @@ export class AgentsService {
   private AgentModel = this.prisma.agent;
   private RoleModel = this.prisma.role;
 
-  getAgents() {
-    return this.AgentModel.findMany({
-      include: {
-        grade: true,
-        roles: true,
-      },
-    });
+  async getAgents() {
+    try {
+      return await this.AgentModel.findMany({
+        include: {
+          grade: true,
+          roles: true,
+        },
+      });
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 
   async getAgentById(agentId: string) {
-    const agent = await this.AgentModel.findUnique({
-      where: { id: agentId },
-      include: {
-        grade: true,
-        folderElements: true,
-        roles: true,
-      },
-    });
-    if (!agent) throw new ForbiddenException('Agent could not be found');
-    const folderIdsArray: string[] = agent.grade.folderIds as Array<string>;
-    const folderElementsFromGrade = await this.prisma.folderElement.findMany({
-      where: {
-        id: {
-          in: folderIdsArray,
+    try {
+      const agent = await this.AgentModel.findUnique({
+        where: { id: agentId },
+        include: {
+          grade: true,
+          folderElements: true,
+          roles: true,
         },
-      },
-    });
-    const missingAgentFiles = folderElementsFromGrade.filter((fe) => {
-      return !agent.folderElements.some(
-        (associated) => associated.folderElementId === fe.id,
-      );
-    });
+      });
+      if (!agent) throw new ForbiddenException('Agent could not be found');
+      const folderIdsArray: string[] = agent.grade.folderIds as Array<string>;
+      const folderElementsFromGrade = await this.prisma.folderElement.findMany({
+        where: {
+          id: {
+            in: folderIdsArray,
+          },
+        },
+      });
+      const missingAgentFiles = folderElementsFromGrade.filter((fe) => {
+        return !agent.folderElements.some(
+          (associated) => associated.folderElementId === fe.id,
+        );
+      });
 
-    return {
-      agent,
-      missingAgentFiles,
-    };
+      return {
+        agent,
+        missingAgentFiles,
+      };
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 
   async createAgent(dto: CreateAgentDto) {
@@ -106,24 +114,28 @@ export class AgentsService {
     dto: DefinePasswordAndUsernameDto,
     email: string,
   ) {
-    const hash = await argon.hash(dto.password);
-    const agent = await this.AgentModel.findUnique({
-      where: { email, resetToken: { not: null } },
-    });
-    if (!agent) throw new ForbiddenException('Agent could not be found');
+    try {
+      const hash = await argon.hash(dto.password);
+      const agent = await this.AgentModel.findUnique({
+        where: { email, resetToken: { not: null } },
+      });
+      if (!agent) throw new ForbiddenException('Agent could not be found');
 
-    if (dto.password !== dto.confirmPassword)
-      throw new BadRequestException(
-        'Les deux mots de passe doivent correspondre',
-      );
-    return this.AgentModel.update({
-      data: {
-        username: dto.username ?? agent.username,
-        password: hash ?? agent.password,
-        resetToken: null,
-      },
-      where: { email },
-    });
+      if (dto.password !== dto.confirmPassword)
+        throw new BadRequestException(
+          'Les deux mots de passe doivent correspondre',
+        );
+      return this.AgentModel.update({
+        data: {
+          username: dto.username ?? agent.username,
+          password: hash ?? agent.password,
+          resetToken: null,
+        },
+        where: { email },
+      });
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 
   async updateAgent(dto: UpdateAgentDto, agentId: string): Promise<any> {
@@ -159,20 +171,24 @@ export class AgentsService {
     email: string,
     expireesIn: string,
   ): Promise<{ access_token: string }> {
-    const payload = {
-      sub: userId,
-      email,
-    };
+    try {
+      const payload = {
+        sub: userId,
+        email,
+      };
 
-    const secret = this.config.get<string>('JWT_SECRET_KEY');
-    const access_token = await this.jwt.signAsync(payload, {
-      expiresIn: expireesIn,
-      secret,
-    });
+      const secret = this.config.get<string>('JWT_SECRET_KEY');
+      const access_token = await this.jwt.signAsync(payload, {
+        expiresIn: expireesIn,
+        secret,
+      });
 
-    return {
-      access_token,
-    };
+      return {
+        access_token,
+      };
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 
   // async updateProfile(dto: UpdateAgentProfileDto, agentId: string): Promise<any> {

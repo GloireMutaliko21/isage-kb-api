@@ -10,7 +10,7 @@ export class ImmobilisationService {
 
   async createImmob(dto: CreateImmob) {
     try {
-      return this.ImmobModel.create({
+      return await this.ImmobModel.create({
         data: { ...dto, vnc: dto.valDepart },
       });
     } catch (error) {
@@ -20,7 +20,7 @@ export class ImmobilisationService {
 
   async getImmobs() {
     try {
-      return this.ImmobModel.findMany({
+      return await this.ImmobModel.findMany({
         include: {
           category: true,
           service: true,

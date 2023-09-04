@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateRoleDto, UpdateRoleDto } from './dto';
 
@@ -9,87 +13,117 @@ export class RolesService {
   private RoleModel = this.prisma.role;
   private AgentModel = this.prisma.agent;
 
-  getRoles() {
-    return this.RoleModel.findMany();
+  async getRoles() {
+    try {
+      return await this.RoleModel.findMany();
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 
   async getRoleById(roleId: string) {
-    const role = await this.RoleModel.findUnique({
-      where: { id: roleId },
-    });
+    try {
+      const role = await this.RoleModel.findUnique({
+        where: { id: roleId },
+      });
 
-    if (!role) throw new ForbiddenException('Role could not be found');
-    return role;
+      if (!role) throw new ForbiddenException('Role could not be found');
+      return role;
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 
   async createRole(dto: CreateRoleDto) {
-    const role = await this.RoleModel.create({
-      data: { ...dto },
-    });
+    try {
+      const role = await this.RoleModel.create({
+        data: { ...dto },
+      });
 
-    return role;
+      return role;
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 
   async editRole(roleId: string, dto: UpdateRoleDto) {
-    const role = await this.RoleModel.findUnique({
-      where: { id: roleId },
-    });
+    try {
+      const role = await this.RoleModel.findUnique({
+        where: { id: roleId },
+      });
 
-    if (!role) throw new ForbiddenException('Role could not be found');
+      if (!role) throw new ForbiddenException('Role could not be found');
 
-    return this.RoleModel.update({
-      data: { ...dto },
-      where: { id: roleId },
-    });
+      return this.RoleModel.update({
+        data: { ...dto },
+        where: { id: roleId },
+      });
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 
   async deleteRole(roleId: string) {
-    const role = await this.RoleModel.findUnique({
-      where: { id: roleId },
-    });
-    if (!role) throw new ForbiddenException('Role could not be found');
+    try {
+      const role = await this.RoleModel.findUnique({
+        where: { id: roleId },
+      });
+      if (!role) throw new ForbiddenException('Role could not be found');
 
-    return this.RoleModel.delete({
-      where: { id: roleId },
-    });
+      return this.RoleModel.delete({
+        where: { id: roleId },
+      });
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 
   async createAccess(roleId: string, agentId: string) {
-    const role = await this.RoleModel.findUnique({
-      where: { id: roleId },
-      include: { agents: true },
-    });
+    try {
+      const role = await this.RoleModel.findUnique({
+        where: { id: roleId },
+        include: { agents: true },
+      });
 
-    if (!role) throw new ForbiddenException('Ressource(s) could not be found');
+      if (!role)
+        throw new ForbiddenException('Ressource(s) could not be found');
 
-    return this.AgentModel.update({
-      where: { id: agentId },
-      include: { roles: true },
-      data: {
-        roles: {
-          connect: { id: roleId },
+      return this.AgentModel.update({
+        where: { id: agentId },
+        include: { roles: true },
+        data: {
+          roles: {
+            connect: { id: roleId },
+          },
         },
-      },
-    });
+      });
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 
   async removeAccess(roleId: string, agentId: string) {
-    const role = await this.RoleModel.findUnique({
-      where: { id: roleId },
-      include: { agents: true },
-    });
+    try {
+      const role = await this.RoleModel.findUnique({
+        where: { id: roleId },
+        include: { agents: true },
+      });
 
-    if (!role) throw new ForbiddenException('Ressource(s) could not be found');
+      if (!role)
+        throw new ForbiddenException('Ressource(s) could not be found');
 
-    const access = await this.AgentModel.update({
-      where: { id: agentId },
-      include: { roles: true },
-      data: {
-        roles: {
-          disconnect: { id: roleId },
+      const access = await this.AgentModel.update({
+        where: { id: agentId },
+        include: { roles: true },
+        data: {
+          roles: {
+            disconnect: { id: roleId },
+          },
         },
-      },
-    });
-    return access;
+      });
+      return access;
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 }

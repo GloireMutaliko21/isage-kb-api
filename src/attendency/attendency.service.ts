@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 
 import { PrismaService } from '../prisma/prisma.service';
@@ -17,31 +21,35 @@ export class AttendencyService {
   private async attendenceAgentsInConge() {
     const currentDate = new Date();
 
-    const agentsWithPresenceIds = (await this.getDailyAttendencies()).map(
-      (presence) => presence.agentId,
-    );
+    try {
+      const agentsWithPresenceIds = (await this.getDailyAttendencies()).map(
+        (presence) => presence.agentId,
+      );
 
-    const agentsOnLeave = await this.prisma.conge.findMany({
-      where: {
-        endDate: {
-          gte: currentDate,
+      const agentsOnLeave = await this.prisma.conge.findMany({
+        where: {
+          endDate: {
+            gte: currentDate,
+          },
+          approved: true,
+          agentId: {
+            notIn: agentsWithPresenceIds,
+          },
         },
-        approved: true,
-        agentId: {
-          notIn: agentsWithPresenceIds,
+        select: {
+          agent: true,
         },
-      },
-      select: {
-        agent: true,
-      },
-    });
-    if (!agentsOnLeave) return;
+      });
+      if (!agentsOnLeave) return;
 
-    const data = agentsOnLeave.map((record) => ({
-      agentId: record.agent.id,
-      status: 'en conge',
-    }));
-    return this.AttendencyModel.createMany({ data });
+      const data = agentsOnLeave.map((record) => ({
+        agentId: record.agent.id,
+        status: 'en conge',
+      }));
+      return this.AttendencyModel.createMany({ data });
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 
   /* 
@@ -51,44 +59,51 @@ export class AttendencyService {
     const date = new Date(dto.dateNow);
 
     let status: string;
+    try {
+      if (8 < date.getHours()) {
+        status = 'retard';
+      } else {
+        if (date.getMinutes() > 30) status = 'leger retard';
+        else status = 'present';
+      }
 
-    if (8 < date.getHours()) {
-      status = 'retard';
-    } else {
-      if (date.getMinutes() > 30) status = 'leger retard';
-      else status = 'present';
-    }
-
-    const attendencies = await this.AttendencyModel.findMany({
-      where: {
-        AND: {
-          agentId: dto.agentId,
-          createdAt: {
-            gte: new Date(date.getFullYear(), date.getMonth(), date.getDate()),
-            lt: new Date(
-              date.getFullYear(),
-              date.getMonth(),
-              date.getDate() + 1,
-            ),
+      const attendencies = await this.AttendencyModel.findMany({
+        where: {
+          AND: {
+            agentId: dto.agentId,
+            createdAt: {
+              gte: new Date(
+                date.getFullYear(),
+                date.getMonth(),
+                date.getDate(),
+              ),
+              lt: new Date(
+                date.getFullYear(),
+                date.getMonth(),
+                date.getDate() + 1,
+              ),
+            },
           },
         },
-      },
-    });
+      });
 
-    if (attendencies.length > 0)
-      throw new ForbiddenException('Algent already pointed');
-    return await this.AttendencyModel.create({
-      data: {
-        agentId: dto.agentId,
-        status,
-      },
-    });
+      if (attendencies.length > 0)
+        throw new ForbiddenException('Algent already pointed');
+      return await this.AttendencyModel.create({
+        data: {
+          agentId: dto.agentId,
+          status,
+        },
+      });
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 
   /* 
     Service to get daily attendency status"
   */
-  getDailyAttendencies() {
+  async getDailyAttendencies() {
     const date = new Date();
     const startOfDay = new Date(
       date.getFullYear(),
@@ -100,62 +115,73 @@ export class AttendencyService {
       date.getMonth(),
       date.getDate() + 1,
     );
-    return this.AttendencyModel.findMany({
-      where: {
-        createdAt: {
-          gte: startOfDay,
-          lt: endOfDay,
+    try {
+      return await this.AttendencyModel.findMany({
+        where: {
+          createdAt: {
+            gte: startOfDay,
+            lt: endOfDay,
+          },
         },
-      },
-      include: {
-        agent: true,
-      },
-    });
+        include: {
+          agent: true,
+        },
+      });
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 
   /* 
     Service to get monthly attendency status"
   */
-  getMonthlyGobalAttendency(year: number, month: number) {
+  async getMonthlyGobalAttendency(year: number, month: number) {
     const startDate = new Date(year, month - 1, 1);
     const endDate = new Date(year, month, 0);
 
-    return this.AttendencyModel.findMany({
-      where: {
-        createdAt: {
-          gte: startDate,
-          lt: endDate,
+    try {
+      return await this.AttendencyModel.findMany({
+        where: {
+          createdAt: {
+            gte: startDate,
+            lt: endDate,
+          },
         },
-      },
-      include: {
-        agent: true,
-      },
-    });
+        include: {
+          agent: true,
+        },
+      });
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 
   /* 
     Service to get monthly attendency status per agent"
   */
-  getMonthlyGobalAttendencyPerAgent(
+  async getMonthlyGobalAttendencyPerAgent(
     year: number,
     month: number,
     agentId: string,
   ) {
     const startDate = new Date(year, month - 1, 1);
     const endDate = new Date(year, month, 0);
-
-    return this.AttendencyModel.findMany({
-      where: {
-        agentId,
-        createdAt: {
-          gte: startDate,
-          lt: endDate,
+    try {
+      return await this.AttendencyModel.findMany({
+        where: {
+          agentId,
+          createdAt: {
+            gte: startDate,
+            lt: endDate,
+          },
         },
-      },
-      include: {
-        agent: true,
-      },
-    });
+        include: {
+          agent: true,
+        },
+      });
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 
   /* 
@@ -163,44 +189,48 @@ export class AttendencyService {
   */
   @Cron('0 10 * * 1-5')
   private async createAbsences() {
-    const agentsWithPresenceIds = (await this.getDailyAttendencies()).map(
-      (presence) => presence.agentId,
-    );
+    try {
+      const agentsWithPresenceIds = (await this.getDailyAttendencies()).map(
+        (presence) => presence.agentId,
+      );
 
-    const currentDate = new Date();
-    const agentsOnConge = await this.prisma.conge.findMany({
-      where: {
-        endDate: {
-          gte: currentDate,
+      const currentDate = new Date();
+      const agentsOnConge = await this.prisma.conge.findMany({
+        where: {
+          endDate: {
+            gte: currentDate,
+          },
+          approved: true,
         },
-        approved: true,
-      },
-      select: {
-        agent: true,
-      },
-    });
-    const agentsOnLeaveIds = agentsOnConge.map((agent) => agent.agent.id);
+        select: {
+          agent: true,
+        },
+      });
+      const agentsOnLeaveIds = agentsOnConge.map((agent) => agent.agent.id);
 
-    const agentsWithoutPresence = await this.prisma.agent.findMany({
-      where: {
-        AND: [
-          {
-            id: {
-              notIn: agentsWithPresenceIds,
+      const agentsWithoutPresence = await this.prisma.agent.findMany({
+        where: {
+          AND: [
+            {
+              id: {
+                notIn: agentsWithPresenceIds,
+              },
             },
-          },
-          {
-            id: {
-              notIn: agentsOnLeaveIds,
+            {
+              id: {
+                notIn: agentsOnLeaveIds,
+              },
             },
-          },
-        ],
-      },
-    });
-    const data = agentsWithoutPresence.map((record) => ({
-      agentId: record.id,
-      status: 'absent',
-    }));
-    return this.AttendencyModel.createMany({ data });
+          ],
+        },
+      });
+      const data = agentsWithoutPresence.map((record) => ({
+        agentId: record.id,
+        status: 'absent',
+      }));
+      return this.AttendencyModel.createMany({ data });
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 }

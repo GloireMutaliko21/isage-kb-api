@@ -10,7 +10,6 @@ import { CreateOperationDto } from './dto';
 @Injectable()
 export class InventaireService {
   constructor(private readonly prisma: PrismaService) {}
-  private readonly OperationModel = this.prisma.operation;
 
   async createOperation(dto: CreateOperationDto) {
     try {

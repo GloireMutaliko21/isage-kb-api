@@ -1,5 +1,5 @@
 import { PrismaService } from './../../prisma/prisma.service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
@@ -14,13 +14,17 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: { sub: string; email: string }) {
-    const user = await this.prisma.agent.findUnique({
-      where: { email: payload.email },
-      include: { roles: true, grade: true, folderElements: true },
-    });
-    delete user.password;
-    const roles = user.roles.map((role) => role.title);
-    delete user.roles;
-    return { ...user, roles };
+    try {
+      const user = await this.prisma.agent.findUnique({
+        where: { email: payload.email },
+        include: { roles: true, grade: true, folderElements: true },
+      });
+      delete user.password;
+      const roles = user.roles.map((role) => role.title);
+      delete user.roles;
+      return { ...user, roles };
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 }

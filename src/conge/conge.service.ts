@@ -20,72 +20,75 @@ export class CongeService {
 
   async requestConge(agentId: string) {
     const currentDate = new Date();
-    const existConge = await this.CongeModel.findFirst({
-      where: {
-        agentId: agentId,
-        OR: [
-          {
-            endDate: {
-              gte: currentDate,
+    try {
+      const existConge = await this.CongeModel.findFirst({
+        where: {
+          agentId: agentId,
+          OR: [
+            {
+              endDate: {
+                gte: currentDate,
+              },
             },
-          },
-          {
-            approved: false,
-          },
-        ],
-      },
-    });
-    if (existConge)
-      throw new ConflictException(
-        'You are already in leave or you have another request',
-      );
+            {
+              approved: false,
+            },
+          ],
+        },
+      });
+      if (existConge)
+        throw new ConflictException(
+          'You are already in leave or you have another request',
+        );
 
-    return this.CongeModel.create({
-      data: {
-        agentId,
-      },
-    });
+      return this.CongeModel.create({
+        data: {
+          agentId,
+        },
+      });
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 
   async approuveConge(dto: CreateCongeDto, congeId: string) {
-    const conge = await this.CongeModel.findFirst({
-      where: {
-        id: congeId,
-        agentId: dto.agentId,
-        approved: false,
-      },
-      include: { agent: true },
-    });
-    if (!conge) throw new BadRequestException('Approve failed');
+    try {
+      const conge = await this.CongeModel.findFirst({
+        where: {
+          id: congeId,
+          agentId: dto.agentId,
+          approved: false,
+        },
+        include: { agent: true },
+      });
+      if (!conge) throw new BadRequestException('Approve failed');
 
-    const approvedConge = await this.CongeModel.update({
-      data: {
-        approved: true,
-        ...dto,
-      },
-      where: {
-        id: congeId,
-      },
-      include: {
-        agent: {
-          include: {
-            grade: true,
+      const approvedConge = await this.CongeModel.update({
+        data: {
+          approved: true,
+          ...dto,
+        },
+        where: {
+          id: congeId,
+        },
+        include: {
+          agent: {
+            include: {
+              grade: true,
+            },
           },
         },
-      },
-    });
+      });
 
-    await this.prisma.remDaysConge.create({
-      data: {
-        days: calculateNumberOfDays(
-          approvedConge.startDate,
-          approvedConge.endDate,
-        ),
-        agentId: approvedConge.agentId,
-      },
-    });
-
-    try {
+      await this.prisma.remDaysConge.create({
+        data: {
+          days: calculateNumberOfDays(
+            approvedConge.startDate,
+            approvedConge.endDate,
+          ),
+          agentId: approvedConge.agentId,
+        },
+      });
       this.mailer.sendMail(
         'Congé approuvé',
         conge.agent.email,
@@ -110,18 +113,18 @@ export class CongeService {
 
   async createConge(dto: CreateCongeDto) {
     const currentDate = new Date();
-    const existConge = await this.CongeModel.findFirst({
-      where: {
-        agentId: dto.agentId,
-        endDate: {
-          gte: currentDate,
-        },
-      },
-    });
-    if (existConge)
-      throw new ConflictException('This agent is still in leave ');
-
     try {
+      const existConge = await this.CongeModel.findFirst({
+        where: {
+          agentId: dto.agentId,
+          endDate: {
+            gte: currentDate,
+          },
+        },
+      });
+      if (existConge)
+        throw new ConflictException('This agent is still in leave ');
+
       const conge = await this.CongeModel.create({
         data: { ...dto, approved: true },
         include: { agent: true },
@@ -157,18 +160,21 @@ export class CongeService {
 
   async getAgentsOnConge() {
     const currentDate = new Date();
-
-    const agentsOnLeave = await this.CongeModel.findMany({
-      where: {
-        endDate: {
-          gte: currentDate,
+    try {
+      const agentsOnLeave = await this.CongeModel.findMany({
+        where: {
+          endDate: {
+            gte: currentDate,
+          },
         },
-      },
-      select: {
-        agent: true,
-      },
-    });
+        select: {
+          agent: true,
+        },
+      });
 
-    return agentsOnLeave.map((record) => record.agent);
+      return agentsOnLeave.map((record) => record.agent);
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 }

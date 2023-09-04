@@ -18,18 +18,22 @@ export class AgentFilesService {
     url: string,
     public_id: string,
   ) {
-    const existFile = await this.FolderModel.findFirst({
-      where: {
-        agentId: dto.agentId,
-        folderElementId: dto.folderElementId,
-      },
-    });
-    if (existFile !== null)
-      throw new ConflictException('This agent has alredy this file');
+    try {
+      const existFile = await this.FolderModel.findFirst({
+        where: {
+          agentId: dto.agentId,
+          folderElementId: dto.folderElementId,
+        },
+      });
+      if (existFile !== null)
+        throw new ConflictException('This agent has alredy this file');
 
-    return await this.FolderModel.create({
-      data: { ...dto, url, public_id },
-    });
+      return await this.FolderModel.create({
+        data: { ...dto, url, public_id },
+      });
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 
   async updateAgentFile(
@@ -37,21 +41,25 @@ export class AgentFilesService {
     url: string,
     public_id: string,
   ) {
-    const file = await this.FolderModel.findFirst({
-      where: {
-        agentId: dto.agentId,
-        folderElementId: dto.folderElementId,
-      },
-    });
-    if (!file) throw new ForbiddenException('File could not be found');
-    return this.FolderModel.update({
-      data: { url, public_id },
-      where: {
-        agentId_folderElementId: {
+    try {
+      const file = await this.FolderModel.findFirst({
+        where: {
           agentId: dto.agentId,
           folderElementId: dto.folderElementId,
         },
-      },
-    });
+      });
+      if (!file) throw new ForbiddenException('File could not be found');
+      return this.FolderModel.update({
+        data: { url, public_id },
+        where: {
+          agentId_folderElementId: {
+            agentId: dto.agentId,
+            folderElementId: dto.folderElementId,
+          },
+        },
+      });
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 }

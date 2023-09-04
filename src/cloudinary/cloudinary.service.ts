@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { UploadApiErrorResponse, UploadApiResponse, v2 } from 'cloudinary';
 import { ConfigService } from '@nestjs/config';
 import toStream = require('buffer-to-stream');
@@ -17,36 +17,48 @@ export class CloudinaryService {
     file: Express.Multer.File,
     folder: string,
   ): Promise<UploadApiResponse | UploadApiErrorResponse> {
-    return new Promise((resolve, reject) => {
-      const upload = v2.uploader.upload_stream(
-        {
-          folder: `ISAGE-KB/${folder}`,
-        },
-        (err, res) => {
-          if (err) return reject(err);
-          resolve(res);
-        },
-      );
-      toStream(file.buffer).pipe(upload);
-    });
+    try {
+      return new Promise((resolve, reject) => {
+        const upload = v2.uploader.upload_stream(
+          {
+            folder: `ISAGE-KB/${folder}`,
+          },
+          (err, res) => {
+            if (err) return reject(err);
+            resolve(res);
+          },
+        );
+        toStream(file.buffer).pipe(upload);
+      });
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 
   async uploadFiles(files: Array<Express.Multer.File>, folder: string) {
-    const urls = await Promise.all(
-      files.map(async (file): Promise<string> => {
-        const { secure_url } = await this.upload(file, folder);
-        return secure_url;
-      }),
-    );
-    return urls;
+    try {
+      const urls = await Promise.all(
+        files.map(async (file): Promise<string> => {
+          const { secure_url } = await this.upload(file, folder);
+          return secure_url;
+        }),
+      );
+      return urls;
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 
   async delete(publicId: string): Promise<any> {
-    return await new Promise((resolve, reject) => {
-      v2.uploader.destroy(publicId, (err, result) => {
-        if (err) reject(err);
-        else resolve(result);
+    try {
+      return await new Promise((resolve, reject) => {
+        v2.uploader.destroy(publicId, (err, result) => {
+          if (err) reject(err);
+          else resolve(result);
+        });
       });
-    });
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 }

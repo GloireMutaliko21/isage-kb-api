@@ -20,19 +20,27 @@ export class GradesService {
   }
 
   async getGradeById(gradeId: string) {
-    const grade = await this.GradeModel.findUnique({
-      where: { id: gradeId },
-      include: { agents: true },
-    });
-    if (!grade) throw new ForbiddenException('Grade could not be found');
-    return grade;
+    try {
+      const grade = await this.GradeModel.findUnique({
+        where: { id: gradeId },
+        include: { agents: true },
+      });
+      if (!grade) throw new ForbiddenException('Grade could not be found');
+      return grade;
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 
   async createGrade(dto: CreateGradeDto) {
-    const grade = await this.GradeModel.create({
-      data: { ...dto },
-    });
-    return grade;
+    try {
+      const grade = await this.GradeModel.create({
+        data: { ...dto },
+      });
+      return grade;
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 
   async editGrade(gradeId: string, dto: UpdateGradeDto) {
@@ -60,10 +68,14 @@ export class GradesService {
   }
 
   async deleteGrade(gradeId: string) {
-    const grade = await this.GradeModel.findUnique({
-      where: { id: gradeId },
-    });
-    if (!grade) throw new ForbiddenException('Grade could not be found');
-    return await this.GradeModel.delete({ where: { id: gradeId } });
+    try {
+      const grade = await this.GradeModel.findUnique({
+        where: { id: gradeId },
+      });
+      if (!grade) throw new ForbiddenException('Grade could not be found');
+      return await this.GradeModel.delete({ where: { id: gradeId } });
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 }
