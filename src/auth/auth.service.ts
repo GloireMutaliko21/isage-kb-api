@@ -10,6 +10,7 @@ import * as argon from 'argon2';
 import { PrismaService } from '../prisma/prisma.service';
 import { LoginDto } from './dto';
 import { AgentsService } from '../agents/agents.service';
+import { deleteKeys } from '../utils/delete-agent-porperties';
 
 @Injectable()
 export class AuthService {
@@ -39,6 +40,7 @@ export class AuthService {
         '15d',
       );
 
+      deleteKeys(agent, ['password', 'resetToken']);
       return {
         message: 'Connexion success',
         user: agent,

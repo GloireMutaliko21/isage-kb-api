@@ -5,6 +5,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { CreateGradeDto, UpdateGradeDto } from './dto';
+import { deleteKeys } from '../utils/delete-agent-porperties';
 
 @Injectable()
 export class GradesService {
@@ -13,7 +14,13 @@ export class GradesService {
 
   async getGrades() {
     try {
-      return await this.GradeModel.findMany({ include: { agents: true } });
+      const grades = await this.GradeModel.findMany({
+        include: { agents: true },
+      });
+      grades.forEach((g) =>
+        g.agents.forEach((a) => deleteKeys(a, ['password', 'resetToken'])),
+      );
+      return grades;
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
@@ -26,6 +33,7 @@ export class GradesService {
         include: { agents: true },
       });
       if (!grade) throw new ForbiddenException('Grade could not be found');
+      grade.agents.forEach((a) => deleteKeys(a, ['password', 'resetToken']));
       return grade;
     } catch (error) {
       throw new InternalServerErrorException(error);
@@ -57,11 +65,15 @@ export class GradesService {
         );
       }
 
-      return await this.GradeModel.update({
+      const gradeUpdated = await this.GradeModel.update({
         data: { ...dto, folderIds: folderIds.concat(folderIdsToAdd) },
         where: { id: gradeId },
         include: { agents: true },
       });
+      gradeUpdated.agents.forEach((a) =>
+        deleteKeys(a, ['password', 'resetToken']),
+      );
+      return gradeUpdated;
     } catch (error) {
       throw new InternalServerErrorException(error);
     }

@@ -8,6 +8,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateCongeDto } from './dto';
 import { MailService } from '../mail/mail.service';
 import { calculateNumberOfDays } from '../utils/number-of-days';
+import { deleteKeys } from '../utils/delete-agent-porperties';
 
 @Injectable()
 export class CongeService {
@@ -105,6 +106,7 @@ export class CongeService {
         </div>`,
       );
 
+      deleteKeys(approvedConge.agent, ['password', 'resetToken']);
       return approvedConge;
     } catch (error) {
       throw new InternalServerErrorException(error);
@@ -152,6 +154,7 @@ export class CongeService {
           Nous vous souhaitons un bon répos et à très bientôt ! 🥰
           </div>`,
       );
+      deleteKeys(conge.agent, ['password', 'resetToken']);
       return conge;
     } catch (error) {
       throw new InternalServerErrorException(error);
@@ -172,7 +175,9 @@ export class CongeService {
         },
       });
 
-      return agentsOnLeave.map((record) => record.agent);
+      const agents = agentsOnLeave.map((record) => record.agent);
+      agents.forEach((a) => deleteKeys(a, ['password', 'resetToken']));
+      return agents;
     } catch (error) {
       throw new InternalServerErrorException(error);
     }

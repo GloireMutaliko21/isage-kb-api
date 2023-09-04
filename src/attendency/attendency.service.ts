@@ -7,6 +7,7 @@ import { Cron } from '@nestjs/schedule';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateAttendencyDto } from './dto';
+import { deleteKeys } from '../utils/delete-agent-porperties';
 
 @Injectable()
 export class AttendencyService {
@@ -116,7 +117,7 @@ export class AttendencyService {
       date.getDate() + 1,
     );
     try {
-      return await this.AttendencyModel.findMany({
+      const attendency = await this.AttendencyModel.findMany({
         where: {
           createdAt: {
             gte: startOfDay,
@@ -127,6 +128,10 @@ export class AttendencyService {
           agent: true,
         },
       });
+      attendency.forEach((a) =>
+        deleteKeys(a.agent, ['password', 'resetToken']),
+      );
+      return attendency;
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
@@ -140,7 +145,7 @@ export class AttendencyService {
     const endDate = new Date(year, month, 0);
 
     try {
-      return await this.AttendencyModel.findMany({
+      const attendency = await this.AttendencyModel.findMany({
         where: {
           createdAt: {
             gte: startDate,
@@ -151,6 +156,10 @@ export class AttendencyService {
           agent: true,
         },
       });
+      attendency.forEach((a) =>
+        deleteKeys(a.agent, ['password', 'resetToken']),
+      );
+      return attendency;
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
@@ -167,7 +176,7 @@ export class AttendencyService {
     const startDate = new Date(year, month - 1, 1);
     const endDate = new Date(year, month, 0);
     try {
-      return await this.AttendencyModel.findMany({
+      const attendency = await this.AttendencyModel.findMany({
         where: {
           agentId,
           createdAt: {
@@ -179,6 +188,9 @@ export class AttendencyService {
           agent: true,
         },
       });
+      attendency.forEach((a) =>
+        deleteKeys(a.agent, ['password', 'resetToken']),
+      );
     } catch (error) {
       throw new InternalServerErrorException(error);
     }

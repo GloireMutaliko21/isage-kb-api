@@ -12,6 +12,7 @@ import { CreateAgentDto, UpdateAgentDto, UpdateAgentProfileDto } from './dto';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { DefinePasswordAndUsernameDto } from '../auth/dto/auth.dto';
+import { deleteKeys } from '../utils/delete-agent-porperties';
 
 @Injectable()
 export class AgentsService {
@@ -26,12 +27,14 @@ export class AgentsService {
 
   async getAgents() {
     try {
-      return await this.AgentModel.findMany({
+      const agents = await this.AgentModel.findMany({
         include: {
           grade: true,
           roles: true,
         },
       });
+      agents.forEach((agent) => deleteKeys(agent, ['password', 'resetToken']));
+      return agents;
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
@@ -61,7 +64,7 @@ export class AgentsService {
           (associated) => associated.folderElementId === fe.id,
         );
       });
-
+      deleteKeys(agent, ['password', 'resetToken']);
       return {
         agent,
         missingAgentFiles,
@@ -104,6 +107,7 @@ export class AgentsService {
         agent.email,
         `<b>Bonjour, Inscription reussie</b><br/><p>Clique sur ce <a href="http://localhost:3000/auth/createpass/${agent.id}?t=${access_token}">lien</a> pour definir votre mot de passe</p>`,
       );
+      deleteKeys(agent, ['password', 'resetToken']);
       return agent;
     } catch (error) {
       throw new InternalServerErrorException("Quelque chose s'est mal passé");
@@ -125,7 +129,7 @@ export class AgentsService {
         throw new BadRequestException(
           'Les deux mots de passe doivent correspondre',
         );
-      return this.AgentModel.update({
+      const agentUpadated = this.AgentModel.update({
         data: {
           username: dto.username ?? agent.username,
           password: hash ?? agent.password,
@@ -133,6 +137,8 @@ export class AgentsService {
         },
         where: { email },
       });
+      deleteKeys(agentUpadated, ['password', 'resetToken']);
+      return agentUpadated;
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
@@ -152,7 +158,7 @@ export class AgentsService {
       });
       if (!agent) throw new ForbiddenException('Agent could not be found');
       this.mailer.sendMail('Register Success', agent.email, html);
-      return await this.AgentModel.update({
+      const agentUpdated = await this.AgentModel.update({
         where: { id: agentId },
         data: { ...dto },
         include: {
@@ -161,6 +167,8 @@ export class AgentsService {
           roles: true,
         },
       });
+      deleteKeys(agentUpdated, ['password', 'resetToken']);
+      return agentUpdated;
     } catch (error) {
       throw new InternalServerErrorException(error);
     }

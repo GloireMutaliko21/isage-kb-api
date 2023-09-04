@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateSocialCaseDto, UpdateSocialCaseDto } from './dto';
+import { deleteKeys } from '../utils/delete-agent-porperties';
 
 @Injectable()
 export class SocialCaseService {
@@ -16,10 +17,12 @@ export class SocialCaseService {
 
   async createSocialCase(dto: CreateSocialCaseDto, agentId: string) {
     try {
-      return await this.CasSocModel.create({
+      const socialCase = await this.CasSocModel.create({
         data: { ...dto, agentId },
         include: { agent: true },
       });
+      deleteKeys(socialCase.agent, ['password', 'resetToken']);
+      return socialCase;
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
@@ -27,7 +30,7 @@ export class SocialCaseService {
 
   async getAllSocialsCase() {
     try {
-      return await this.CasSocModel.findMany({
+      const socialCases = await this.CasSocModel.findMany({
         where: {
           endDate: {
             gte: this.currentDate,
@@ -39,6 +42,10 @@ export class SocialCaseService {
           casSocSubscriptions: true,
         },
       });
+      socialCases.forEach((s) =>
+        deleteKeys(s.agent, ['password', 'resetToken']),
+      );
+      return socialCases;
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
@@ -46,7 +53,7 @@ export class SocialCaseService {
 
   async getPubInProgSocialCase(agentId: string) {
     try {
-      return await this.CasSocModel.findMany({
+      const socialCase = await this.CasSocModel.findMany({
         where: {
           OR: [
             {
@@ -75,52 +82,72 @@ export class SocialCaseService {
           casSocSubscriptions: true,
         },
       });
+      socialCase.forEach((s) =>
+        deleteKeys(s.agent, ['password', 'resetToken']),
+      );
+      return socialCase;
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
   }
 
   async updateSocialCase(dto: UpdateSocialCaseDto, id: string) {
-    const socialCase = await this.CasSocModel.findUnique({
-      where: { id },
-    });
-    if (!socialCase)
-      throw new ForbiddenException('Social case could not be found');
-    return this.CasSocModel.update({
-      data: dto,
-      where: { id },
-      include: {
-        agent: true,
-        casSocSubscriptions: true,
-      },
-    });
+    try {
+      const socialCase = await this.CasSocModel.findUnique({
+        where: { id },
+      });
+      if (!socialCase)
+        throw new ForbiddenException('Social case could not be found');
+      const socialCas = await this.CasSocModel.update({
+        data: dto,
+        where: { id },
+        include: {
+          agent: true,
+          casSocSubscriptions: true,
+        },
+      });
+      deleteKeys(socialCas.agent, ['password', 'resetToken']);
+      return socialCas;
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 
   async publishSocialCase(id: string) {
-    const socialCase = await this.CasSocModel.findUnique({
-      where: { id, status: 'unPublished' },
-    });
-    if (!socialCase)
-      throw new ForbiddenException('Social case could not be found');
-    return this.CasSocModel.update({
-      data: { status: 'published' },
-      where: { id },
-    });
+    try {
+      const socialCase = await this.CasSocModel.findUnique({
+        where: { id, status: 'unPublished' },
+      });
+      if (!socialCase)
+        throw new ForbiddenException('Social case could not be found');
+      return await this.CasSocModel.update({
+        data: { status: 'published' },
+        where: { id },
+      });
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 
   async closeSocialCase(id: string) {
-    const socialCase = await this.CasSocModel.findUnique({
-      where: { id, status: 'published' },
-    });
-    if (!socialCase)
-      throw new ForbiddenException('Social case could not be found');
-    return this.CasSocModel.update({
-      data: { validity: 'closed' },
-      where: { id },
-      include: {
-        agent: true,
-        casSocSubscriptions: true,
-      },
-    });
+    try {
+      const socialCase = await this.CasSocModel.findUnique({
+        where: { id, status: 'published' },
+      });
+      if (!socialCase)
+        throw new ForbiddenException('Social case could not be found');
+      const socCase = await this.CasSocModel.update({
+        data: { validity: 'closed' },
+        where: { id },
+        include: {
+          agent: true,
+          casSocSubscriptions: true,
+        },
+      });
+      deleteKeys(socCase.agent, ['password', 'resetToken']);
+      return socCase;
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 }
