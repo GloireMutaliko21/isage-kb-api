@@ -43,7 +43,24 @@ export class AgentsService {
       },
     });
     if (!agent) throw new ForbiddenException('Agent could not be found');
-    return agent;
+    const folderIdsArray: string[] = agent.grade.folderIds as Array<string>;
+    const folderElementsFromGrade = await this.prisma.folderElement.findMany({
+      where: {
+        id: {
+          in: folderIdsArray,
+        },
+      },
+    });
+    const missingAgentFiles = folderElementsFromGrade.filter((fe) => {
+      return !agent.folderElements.some(
+        (associated) => associated.folderElementId === fe.id,
+      );
+    });
+
+    return {
+      agent,
+      missingAgentFiles,
+    };
   }
 
   async createAgent(dto: CreateAgentDto) {
