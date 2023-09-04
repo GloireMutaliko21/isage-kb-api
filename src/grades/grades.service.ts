@@ -1,5 +1,9 @@
 import { PrismaService } from '../prisma/prisma.service';
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { CreateGradeDto, UpdateGradeDto } from './dto';
 
 @Injectable()
@@ -8,7 +12,11 @@ export class GradesService {
   private GradeModel = this.prisma.grade;
 
   async getGrades() {
-    return await this.GradeModel.findMany({ include: { agents: true } });
+    try {
+      return await this.GradeModel.findMany({ include: { agents: true } });
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 
   async getGradeById(gradeId: string) {
@@ -28,15 +36,27 @@ export class GradesService {
   }
 
   async editGrade(gradeId: string, dto: UpdateGradeDto) {
-    const grade = await this.GradeModel.findUnique({
-      where: { id: gradeId },
-    });
-    if (!grade) throw new ForbiddenException('Grade could not be found');
-    return await this.GradeModel.update({
-      data: { ...dto },
-      where: { id: gradeId },
-      include: { agents: true },
-    });
+    try {
+      const grade = await this.GradeModel.findUnique({
+        where: { id: gradeId },
+      });
+      if (!grade) throw new ForbiddenException('Grade could not be found');
+      const folderIds = grade.folderIds as string[];
+      let folderIdsToAdd: string[];
+      if (dto.folderIds) {
+        folderIdsToAdd = dto.folderIds.filter(
+          (folderId) => !folderIds.includes(folderId),
+        );
+      }
+
+      return await this.GradeModel.update({
+        data: { ...dto, folderIds: folderIds.concat(folderIdsToAdd) },
+        where: { id: gradeId },
+        include: { agents: true },
+      });
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 
   async deleteGrade(gradeId: string) {
