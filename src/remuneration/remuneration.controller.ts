@@ -35,6 +35,7 @@ export class RemunerationController {
   registerRemMaladAccid(@Body() dto: RemJMaladAccDto) {
     return this.remunerationService.registerRemMaladAccid(dto);
   }
+
   @Get('malad/:id')
   getRemMaladAccPerAgent(
     @Param('id') agentId: string,

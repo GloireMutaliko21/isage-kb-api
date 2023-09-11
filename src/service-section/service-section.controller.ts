@@ -16,7 +16,7 @@ import { CreateCatgoryDto } from '../property-category/dto';
 
 @UseGuards(JwtGuard, RolesGuard)
 @Controller('service')
-@Roles(Role.Admin, Role.DuPers)
+// @Roles(Role.Admin)
 export class ServiceSectionController {
   constructor(private readonly sectionService: ServiceSectionService) {}
 

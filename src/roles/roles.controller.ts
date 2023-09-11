@@ -19,7 +19,7 @@ import { RolesGuard } from './guards';
 
 @UseGuards(JwtGuard, RolesGuard)
 @Controller('roles')
-@Roles(Role.Admin, Role.DuPers)
+// @Roles(Role.Admin)
 export class RolesController {
   constructor(private roleService: RolesService) {}
 
@@ -53,7 +53,6 @@ export class RolesController {
     return this.roleService.removeAccess(roleId, agentId);
   }
 
-  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   deleteRole(@Param('id') roleId: string) {
     return this.roleService.deleteRole(roleId);

@@ -35,7 +35,7 @@ export class SocialCaseService {
           endDate: {
             gte: this.currentDate,
           },
-          validity: 'inProgress',
+          // validity: 'inProgress',
         },
         include: {
           agent: true,
@@ -120,10 +120,16 @@ export class SocialCaseService {
       });
       if (!socialCase)
         throw new ForbiddenException('Social case could not be found');
-      return await this.CasSocModel.update({
+      const socCase = await this.CasSocModel.update({
         data: { status: 'published' },
         where: { id },
+        include: {
+          agent: true,
+          casSocSubscriptions: true,
+        },
       });
+      deleteKeys(socCase.agent, ['password', 'resetToken']);
+      return socCase;
     } catch (error) {
       throw new InternalServerErrorException(error);
     }

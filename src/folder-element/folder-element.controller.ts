@@ -20,7 +20,7 @@ import { Role } from '../roles/enum';
 // @Roles
 @UseGuards(JwtGuard, RolesGuard)
 @Controller('folder-element')
-@Roles(Role.Admin, Role.DuPers)
+@Roles(Role.Admin)
 export class FolderElementController {
   constructor(private folderElementService: FolderElementService) {}
 

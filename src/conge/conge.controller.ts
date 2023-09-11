@@ -26,6 +26,12 @@ export class CongeController {
     return this.congeService.getAgentsOnConge();
   }
 
+  @Get('pending')
+  @Roles(Role.Admin, Role.DuPers)
+  getUnapprovedConge() {
+    return this.congeService.getUnapprovedConge();
+  }
+
   @Post()
   @Roles(Role.Admin, Role.DuPers)
   createConge(@Body() dto: CreateCongeDto) {

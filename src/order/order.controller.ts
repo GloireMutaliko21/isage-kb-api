@@ -17,7 +17,7 @@ import { CreateOrderDto } from './dto';
 
 @UseGuards(JwtGuard, RolesGuard)
 @Controller('order')
-@Roles(Role.Admin, Role.DuPers)
+@Roles(Role.Admin, Role.DuPatr)
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 

@@ -23,6 +23,10 @@ export class PropertyCategoryService {
         );
       return await this.CategoryModel.create({
         data: dto,
+        include: {
+          immobilisations: true,
+          articles: true,
+        },
       });
     } catch (error) {
       throw new InternalServerErrorException(error);
@@ -64,6 +68,10 @@ export class PropertyCategoryService {
     try {
       const isExists = await this.CategoryModel.findFirst({
         where: { libelle: dto.libelle },
+        include: {
+          immobilisations: true,
+          articles: true,
+        },
       });
       if (isExists)
         throw new ConflictException(

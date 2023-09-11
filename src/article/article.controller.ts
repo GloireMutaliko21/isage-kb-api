@@ -9,7 +9,7 @@ import { CreateArticleDto } from './dto';
 
 @UseGuards(JwtGuard, RolesGuard)
 @Controller('article')
-@Roles(Role.Admin, Role.DuPers)
+@Roles(Role.Admin, Role.DuPatr)
 export class ArticleController {
   constructor(private readonly articleService: ArticleService) {}
 

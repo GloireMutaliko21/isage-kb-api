@@ -18,7 +18,7 @@ import { ParseDatePipe } from '../utils/parse-date.pipe';
 
 @UseGuards(JwtGuard, RolesGuard)
 @Controller('inventaire')
-@Roles(Role.Admin, Role.DuPers)
+@Roles(Role.Admin, Role.DuPatr)
 export class InventaireController {
   constructor(private readonly inventaireService: InventaireService) {}
 

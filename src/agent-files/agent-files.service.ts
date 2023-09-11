@@ -49,7 +49,7 @@ export class AgentFilesService {
         },
       });
       if (!file) throw new ForbiddenException('File could not be found');
-      return this.FolderModel.update({
+      return await this.FolderModel.update({
         data: { url, public_id },
         where: {
           agentId_folderElementId: {

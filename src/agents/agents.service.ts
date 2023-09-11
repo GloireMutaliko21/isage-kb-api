@@ -129,7 +129,7 @@ export class AgentsService {
         throw new BadRequestException(
           'Les deux mots de passe doivent correspondre',
         );
-      const agentUpadated = this.AgentModel.update({
+      const agentUpadated = await this.AgentModel.update({
         data: {
           username: dto.username ?? agent.username,
           password: hash ?? agent.password,

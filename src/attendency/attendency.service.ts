@@ -191,6 +191,7 @@ export class AttendencyService {
       attendency.forEach((a) =>
         deleteKeys(a.agent, ['password', 'resetToken']),
       );
+      return attendency;
     } catch (error) {
       throw new InternalServerErrorException(error);
     }

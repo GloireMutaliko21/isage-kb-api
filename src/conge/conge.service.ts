@@ -42,7 +42,7 @@ export class CongeService {
           'You are already in leave or you have another request',
         );
 
-      return this.CongeModel.create({
+      return await this.CongeModel.create({
         data: {
           agentId,
         },
@@ -169,15 +169,30 @@ export class CongeService {
           endDate: {
             gte: currentDate,
           },
+          startDate: {
+            lte: currentDate,
+          },
         },
         select: {
+          startDate: true,
+          endDate: true,
           agent: true,
         },
       });
 
       const agents = agentsOnLeave.map((record) => record.agent);
       agents.forEach((a) => deleteKeys(a, ['password', 'resetToken']));
-      return agents;
+      return agentsOnLeave;
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
+
+  async getUnapprovedConge() {
+    try {
+      return await this.CongeModel.findMany({
+        where: { approved: false },
+      });
     } catch (error) {
       throw new InternalServerErrorException(error);
     }

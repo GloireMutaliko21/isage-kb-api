@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   ParseIntPipe,
   Post,
   Query,
@@ -35,12 +36,12 @@ export class AttendencyController {
     return this.attendencyService.getMonthlyGobalAttendency(year, month);
   }
 
-  @Get('agent-monthly')
+  @Get('agent-monthly/:agentId')
   @Roles(Role.Admin, Role.DuPers)
   getMonthlyAttendenciePerAgent(
     @Query('year', ParseIntPipe) year: number,
     @Query('month', ParseIntPipe) month: number,
-    @Body('agentId') agentId: string,
+    @Param('agentId') agentId: string,
   ) {
     return this.attendencyService.getMonthlyGobalAttendencyPerAgent(
       year,

@@ -21,6 +21,9 @@ export class ServiceSectionService {
         throw new ConflictException('Service with this libelle already exists');
       return await this.ServiceModel.create({
         data: dto,
+        include: {
+          immobilisations: true,
+        },
       });
     } catch (error) {
       throw new InternalServerErrorException(error);

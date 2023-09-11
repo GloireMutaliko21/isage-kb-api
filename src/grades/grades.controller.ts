@@ -19,7 +19,7 @@ import { Role } from '../roles/enum';
 
 @UseGuards(JwtGuard, RolesGuard)
 @Controller('grades')
-@Roles(Role.Admin, Role.DuPers)
+@Roles(Role.Admin)
 export class GradesController {
   constructor(private gradeService: GradesService) {}
 

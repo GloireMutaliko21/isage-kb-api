@@ -9,7 +9,7 @@ import { CreateImmob } from './dto';
 
 @UseGuards(JwtGuard, RolesGuard)
 @Controller('immob')
-@Roles(Role.Admin, Role.DuPers)
+@Roles(Role.Admin, Role.DuPatr)
 export class ImmobilisationController {
   constructor(private readonly immobService: ImmobilisationService) {}
 

@@ -3,7 +3,11 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    cors: {
+      origin: 'http://localhost:9000',
+    },
+  });
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,

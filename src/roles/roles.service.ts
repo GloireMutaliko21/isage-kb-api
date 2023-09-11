@@ -72,6 +72,9 @@ export class RolesService {
 
       return this.RoleModel.delete({
         where: { id: roleId },
+        select: {
+          id: true,
+        },
       });
     } catch (error) {
       throw new InternalServerErrorException(error);
