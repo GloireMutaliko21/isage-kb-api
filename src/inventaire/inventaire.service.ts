@@ -145,7 +145,7 @@ export class InventaireService {
           json_agg(
             json_build_object(
               'date', o."dateOp",
-              'libelle', a."libelle",
+              'libelle', o."libelle",
               'qte', o."qty",
               'designation', a."libelle"
             )

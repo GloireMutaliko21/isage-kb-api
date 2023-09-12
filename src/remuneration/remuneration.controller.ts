@@ -14,6 +14,7 @@ import { JwtGuard } from '../auth/guards';
 import { RolesGuard } from '../roles/guards';
 import { Roles } from '../roles/decorators';
 import { Role } from '../roles/enum';
+import { ParseDatePipe } from '../utils/parse-date.pipe';
 import {
   CreatePaySlipDto,
   FamilyAllocationDto,
@@ -201,6 +202,14 @@ export class RemunerationController {
     @Query('month', ParseIntPipe) month: number,
   ) {
     return this.remunerationService.getUnpaidAgents(year, month);
+  }
+
+  @Get('payslip')
+  getPaySlipAll(
+    @Query('start', ParseDatePipe) start: string,
+    @Query('end', ParseDatePipe) end: string,
+  ) {
+    return this.remunerationService.getPaySlipAll(start, end);
   }
 
   @Get('payslip/:id')

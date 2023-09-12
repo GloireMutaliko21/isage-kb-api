@@ -526,6 +526,26 @@ export class RemunerationService {
     }
   }
 
+  async getPaySlipAll(start: any, end: any) {
+    try {
+      const paySlip = await this.FichePaieModel.findMany({
+        where: {
+          createdAt: {
+            gte: start,
+            lt: end,
+          },
+        },
+        include: { agent: true },
+      });
+      if (!paySlip)
+        return {
+          message: 'No data',
+          data: {},
+        };
+      return paySlip;
+    } catch (error) {}
+  }
+
   async getPaySlipPerAgent(agentId: string, year: number, month: number) {
     try {
       const paySlip = await this.FichePaieModel.findFirst({
