@@ -528,22 +528,35 @@ export class RemunerationService {
 
   async getPaySlipAll(start: any, end: any) {
     try {
-      const paySlip = await this.FichePaieModel.findMany({
+      const paySlip = await this.FichePaieModel.groupBy({
         where: {
           createdAt: {
             gte: start,
-            lt: end,
+            lte: end,
           },
         },
-        include: { agent: true },
+        by: ['month'],
+        _count: true,
       });
       if (!paySlip)
         return {
           message: 'No data',
           data: {},
         };
-      return paySlip;
-    } catch (error) {}
+      const formatted = paySlip.map(({ month, _count }) => {
+        const mois = month.substring(month.indexOf('-') + 1, month.length);
+        return {
+          mois:
+            mois.length < 2
+              ? month.substring(0, month.indexOf('-') + 1) + 0 + mois
+              : month,
+          total: _count,
+        };
+      });
+      return formatted;
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 
   async getPaySlipPerAgent(agentId: string, year: number, month: number) {
@@ -561,7 +574,9 @@ export class RemunerationService {
           data: {},
         };
       return paySlip;
-    } catch (error) {}
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 
   async getPayList(year: number, month: number) {

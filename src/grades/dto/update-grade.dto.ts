@@ -4,6 +4,7 @@ import {
   IsObject,
   IsString,
   Length,
+  IsNumber,
 } from 'class-validator';
 
 export class UpdateGradeDto {
@@ -11,6 +12,10 @@ export class UpdateGradeDto {
   @IsString()
   @IsOptional()
   title?: string;
+
+  @IsNumber()
+  @IsOptional()
+  baseSalary?: number;
 
   @IsObject()
   @IsOptional()

@@ -20,7 +20,15 @@ export class GradesService {
       grades.forEach((g) =>
         g.agents.forEach((a) => deleteKeys(a, ['password', 'resetToken'])),
       );
-      return grades;
+      const returnedGrades = await Promise.all(
+        grades.map(async (g) => ({
+          ...g,
+          folderElements: await this.prisma.folderElement.findMany({
+            where: { id: { in: g.folderIds as string[] } },
+          }),
+        })),
+      );
+      return returnedGrades;
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
@@ -34,7 +42,15 @@ export class GradesService {
       });
       if (!grade) throw new ForbiddenException('Grade could not be found');
       grade.agents.forEach((a) => deleteKeys(a, ['password', 'resetToken']));
-      return grade;
+      const folderElements = await this.prisma.folderElement.findMany({
+        where: {
+          id: {
+            in: grade.folderIds as string[],
+          },
+        },
+      });
+
+      return { ...grade, folderElements };
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
@@ -57,23 +73,23 @@ export class GradesService {
         where: { id: gradeId },
       });
       if (!grade) throw new ForbiddenException('Grade could not be found');
-      const folderIds = grade.folderIds as string[];
-      let folderIdsToAdd: string[];
-      if (dto.folderIds) {
-        folderIdsToAdd = dto.folderIds.filter(
-          (folderId) => !folderIds.includes(folderId),
-        );
-      }
 
       const gradeUpdated = await this.GradeModel.update({
-        data: { ...dto, folderIds: folderIds.concat(folderIdsToAdd) },
+        data: dto,
         where: { id: gradeId },
         include: { agents: true },
       });
       gradeUpdated.agents.forEach((a) =>
         deleteKeys(a, ['password', 'resetToken']),
       );
-      return gradeUpdated;
+      const folderElements = await this.prisma.folderElement.findMany({
+        where: {
+          id: {
+            in: gradeUpdated.folderIds as string[],
+          },
+        },
+      });
+      return { ...gradeUpdated, folderElements };
     } catch (error) {
       throw new InternalServerErrorException(error);
     }

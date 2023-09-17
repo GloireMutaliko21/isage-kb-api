@@ -19,7 +19,7 @@ import { RolesGuard } from './guards';
 
 @UseGuards(JwtGuard, RolesGuard)
 @Controller('roles')
-// @Roles(Role.Admin)
+@Roles(Role.Admin)
 export class RolesController {
   constructor(private roleService: RolesService) {}
 

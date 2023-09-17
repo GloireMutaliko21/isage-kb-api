@@ -142,14 +142,13 @@ export class AttendencyService {
   */
   async getMonthlyGobalAttendency(year: number, month: number) {
     const startDate = new Date(year, month - 1, 1);
-    const endDate = new Date(year, month, 0);
-
+    const endDate = new Date(year, month, 1);
     try {
       const attendency = await this.AttendencyModel.findMany({
         where: {
           createdAt: {
             gte: startDate,
-            lt: endDate,
+            lte: endDate,
           },
         },
         include: {

@@ -1,6 +1,7 @@
 import {
   IsArray,
   IsNotEmpty,
+  IsNumber,
   IsObject,
   IsString,
   Length,
@@ -11,6 +12,10 @@ export class CreateGradeDto {
   @IsString()
   @IsNotEmpty()
   title: string;
+
+  @IsNumber()
+  @IsNotEmpty()
+  baseSalary: number;
 
   @IsObject()
   @IsNotEmpty()
