@@ -96,12 +96,14 @@ export class AgentsService {
       const agent = await this.AgentModel.create({
         data: {
           ...dto,
+          contacts: { ...dto.contacts },
           resetToken: access_token,
           roles: {
             connect: { id: roleId.id },
           },
         },
       });
+
       this.mailer.sendMail(
         'Register Success',
         agent.email,

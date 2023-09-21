@@ -54,9 +54,9 @@ export class CreateAgentDto {
   @IsNotEmpty()
   acadTitle: string;
 
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
-  sifa: number;
+  sifa: string;
 
   @IsString()
   @IsOptional()

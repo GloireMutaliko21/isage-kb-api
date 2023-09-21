@@ -45,7 +45,7 @@ model Agent {
   promDate  DateTime?
   acadTitle String
 
-  sifa      Int
+  sifa      String
   username  String? @unique
   password  String?
   contacts  Json

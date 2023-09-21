@@ -614,7 +614,6 @@ export class RemunerationService {
         const deductions = paySlip.deductions as Record<string, number>;
         const alloc = paySlip.alloc as Record<string, number>;
         const maladie = paySlip.jMaldAcc as Record<string, number>;
-        console.log(primes);
         return {
           names: paySlip.agent.names,
           grade: paySlip.agent.grade.title,

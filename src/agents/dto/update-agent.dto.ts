@@ -36,9 +36,9 @@ export class UpdateAgentDto {
   @IsOptional()
   acadTitle?: string;
 
-  @IsNumber()
+  @IsString()
   @IsOptional()
-  sifa?: number;
+  sifa?: string;
 }
 
 export class UpdateAgentProfileDto {
