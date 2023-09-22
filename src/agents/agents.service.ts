@@ -102,6 +102,7 @@ export class AgentsService {
             connect: { id: roleId.id },
           },
         },
+        include: { grade: true },
       });
 
       this.mailer.sendMail(
