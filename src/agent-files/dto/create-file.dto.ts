@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateAgentFileDto {
   @IsString()
@@ -8,4 +8,7 @@ export class CreateAgentFileDto {
   @IsString()
   @IsNotEmpty()
   folderElementId: string;
+
+  @IsOptional()
+  file?: any;
 }

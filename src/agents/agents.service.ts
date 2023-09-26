@@ -46,7 +46,7 @@ export class AgentsService {
         where: { id: agentId },
         include: {
           grade: true,
-          folderElements: true,
+          folderElements: { include: { folderElement: true } },
           roles: true,
         },
       });
@@ -66,7 +66,7 @@ export class AgentsService {
       });
       deleteKeys(agent, ['password', 'resetToken']);
       return {
-        agent,
+        ...agent,
         missingAgentFiles,
       };
     } catch (error) {
@@ -166,7 +166,7 @@ export class AgentsService {
         data: { ...dto },
         include: {
           grade: true,
-          folderElements: true,
+          folderElements: { include: { folderElement: true } },
           roles: true,
         },
       });

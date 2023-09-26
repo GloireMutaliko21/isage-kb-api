@@ -12,6 +12,10 @@ import {
 export class UpdateAgentDto {
   @IsString()
   @IsOptional()
+  gradeId?: string;
+
+  @IsString()
+  @IsOptional()
   matricule?: string;
 
   @IsString()
