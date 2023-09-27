@@ -75,7 +75,7 @@ export class AttendencyService {
             createdAt: {
               gte: new Date(
                 date.getFullYear(),
-                date.getMonth() + 1,
+                date.getMonth(),
                 date.getDate(),
               ),
               lt: new Date(
@@ -87,15 +87,18 @@ export class AttendencyService {
           },
         },
       });
-
       if (attendencies.length > 0)
         throw new ForbiddenException('Algent already pointed');
-      return await this.AttendencyModel.create({
-        data: {
-          agentId: dto.agentId,
-          status,
-        },
-      });
+      else
+        return await this.AttendencyModel.create({
+          data: {
+            agentId: dto.agentId,
+            status,
+          },
+          include: {
+            agent: true,
+          },
+        });
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
