@@ -172,10 +172,16 @@ export class CongeService {
           startDate: {
             lte: currentDate,
           },
+          approved: true,
         },
         select: {
+          id: true,
+          agentId: true,
+          createdAt: true,
+          updatedAt: true,
           startDate: true,
           endDate: true,
+          approved: true,
           agent: true,
         },
       });
@@ -190,9 +196,13 @@ export class CongeService {
 
   async getUnapprovedConge() {
     try {
-      return await this.CongeModel.findMany({
+      const records = await this.CongeModel.findMany({
         where: { approved: false },
+        include: { agent: true },
       });
+      const agents = records.map((record) => record.agent);
+      agents.forEach((a) => deleteKeys(a, ['password', 'resetToken']));
+      return records;
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
