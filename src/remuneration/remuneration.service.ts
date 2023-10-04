@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
@@ -517,7 +518,11 @@ export class RemunerationService {
           agentId,
         },
         include: {
-          agent: true,
+          agent: {
+            include: {
+              grade: true,
+            },
+          },
         },
       });
       return paySlip;
@@ -652,6 +657,7 @@ export class RemunerationService {
           },
         },
         select: {
+          id: true,
           names: true,
           grade: {
             select: {
@@ -726,10 +732,7 @@ export class RemunerationService {
         },
       });
       if (agents.length < 1)
-        return {
-          message: 'All agents already paid',
-          data: [],
-        };
+        throw new ForbiddenException('All agents already paid');
       return agents;
     } catch (error) {
       throw new InternalServerErrorException(error);
