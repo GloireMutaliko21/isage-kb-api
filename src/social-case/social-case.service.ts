@@ -31,21 +31,40 @@ export class SocialCaseService {
   async getAllSocialsCase() {
     try {
       const socialCases = await this.CasSocModel.findMany({
-        where: {
-          endDate: {
-            gte: this.currentDate,
-          },
-          // validity: 'inProgress',
-        },
         include: {
           agent: true,
-          casSocSubscriptions: true,
         },
       });
       socialCases.forEach((s) =>
         deleteKeys(s.agent, ['password', 'resetToken']),
       );
       return socialCases;
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
+
+  async getOneSocialCase(id: string) {
+    try {
+      const socialCase = await this.CasSocModel.findUnique({
+        where: { id },
+        include: {
+          agent: true,
+          casSocSubscriptions: {
+            include: {
+              agent: {
+                select: {
+                  names: true,
+                },
+              },
+            },
+          },
+        },
+      });
+      if (!socialCase)
+        throw new ForbiddenException('Social case could not be found');
+      deleteKeys(socialCase.agent, ['password', 'resetToken']);
+      return socialCase;
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
@@ -79,7 +98,6 @@ export class SocialCaseService {
         },
         include: {
           agent: true,
-          casSocSubscriptions: true,
         },
       });
       socialCase.forEach((s) =>

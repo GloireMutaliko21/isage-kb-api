@@ -39,6 +39,12 @@ export class SocialCaseController {
     return this.socialCaseService.getPubInProgSocialCase(agentId);
   }
 
+  @Get(':id')
+  @Roles(Role.Admin, Role.DuPers)
+  getOneSocialCase(@Param('id') id: string) {
+    return this.socialCaseService.getOneSocialCase(id);
+  }
+
   @Patch(':id')
   @Roles(Role.Admin, Role.DuPers)
   updateSocialCase(@Body() dto: UpdateSocialCaseDto, @Param('id') id: string) {
