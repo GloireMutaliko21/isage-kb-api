@@ -5,7 +5,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateArticleDto } from './dto';
+import { CreateArticleDto, UpdateArticleDto } from './dto';
 
 @Injectable()
 export class ArticleService {
@@ -21,6 +21,37 @@ export class ArticleService {
         throw new ConflictException('Article with this libelle already exists');
       return await this.ArticleModel.create({
         data: dto,
+        include: {
+          category: {
+            select: { libelle: true },
+          },
+          unity: {
+            select: { libelle: true },
+          },
+        },
+      });
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
+
+  async updateArticle(dto: UpdateArticleDto, id: string) {
+    try {
+      const isExists = await this.ArticleModel.findUnique({
+        where: { id },
+      });
+      if (!isExists) throw new ForbiddenException('Article could not be found');
+      return await this.ArticleModel.update({
+        data: dto,
+        where: { id },
+        include: {
+          category: {
+            select: { libelle: true },
+          },
+          unity: {
+            select: { libelle: true },
+          },
+        },
       });
     } catch (error) {
       throw new InternalServerErrorException(error);
