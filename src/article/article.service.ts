@@ -100,13 +100,17 @@ export class ArticleService {
           json_agg(
             json_build_object(
               'libelle', articles."libelle", 
-              'qte', articles."qty"
+              'qte', articles."qty",
+              'stockAlert', articles."stockAlert",
+              'unity', unities."libelle"
             )
           ) AS articles
         FROM articles
 
         INNER JOIN categories ON
         articles."categoryId" = categories."id"
+        INNER JOIN unities ON
+        articles."unityId" = unities."id"
 
         GROUP BY categories."libelle";
       `;
