@@ -31,7 +31,13 @@ export class ArticleUnityService {
     try {
       return this.UnityModel.findMany({
         include: {
-          articles: true,
+          articles: {
+            include: {
+              category: {
+                select: { libelle: true },
+              },
+            },
+          },
         },
       });
     } catch (error) {
