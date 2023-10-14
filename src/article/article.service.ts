@@ -147,6 +147,14 @@ export class ArticleService {
             gt: this.ArticleModel.fields.qty,
           },
         },
+        include: {
+          category: {
+            select: { libelle: true },
+          },
+          unity: {
+            select: { libelle: true },
+          },
+        },
       });
       return articles;
     } catch (error) {
