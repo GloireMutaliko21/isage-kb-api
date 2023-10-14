@@ -37,8 +37,20 @@ export class PropertyCategoryService {
     try {
       return await this.CategoryModel.findMany({
         include: {
-          immobilisations: true,
-          articles: true,
+          immobilisations: {
+            include: {
+              service: {
+                select: { libelle: true },
+              },
+            },
+          },
+          articles: {
+            include: {
+              unity: {
+                select: { libelle: true },
+              },
+            },
+          },
         },
       });
     } catch (error) {
