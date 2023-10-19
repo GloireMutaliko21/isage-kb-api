@@ -16,7 +16,9 @@ export class OrderService {
       return await this.OrderModel.create({
         data: dto,
         include: {
-          article: true,
+          article: {
+            include: { unity: true },
+          },
         },
       });
     } catch (error) {
@@ -33,6 +35,11 @@ export class OrderService {
       return await this.OrderModel.update({
         data: { status: 'closed' },
         where: { id },
+        include: {
+          article: {
+            include: { unity: true },
+          },
+        },
       });
     } catch (error) {
       throw new InternalServerErrorException(error);
@@ -48,6 +55,11 @@ export class OrderService {
       return await this.OrderModel.update({
         data: { status: 'canceled' },
         where: { id },
+        include: {
+          article: {
+            include: { unity: true },
+          },
+        },
       });
     } catch (error) {
       throw new InternalServerErrorException(error);
@@ -63,7 +75,9 @@ export class OrderService {
           },
         },
         include: {
-          article: true,
+          article: {
+            include: { unity: true },
+          },
         },
       });
     } catch (error) {
@@ -78,7 +92,9 @@ export class OrderService {
           status: 'closed',
         },
         include: {
-          article: true,
+          article: {
+            include: { unity: true },
+          },
         },
       });
     } catch (error) {
