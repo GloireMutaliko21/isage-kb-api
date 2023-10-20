@@ -63,7 +63,8 @@ export class InventaireService {
             json_build_object(
               'designation', articles."libelle",
               'libelle', operations."libelle",
-              'qte', operations."qty"
+              'qte', operations."qty",
+              'date', operations."dateOp"
             )
           ) AS data
         FROM operations
@@ -157,7 +158,7 @@ export class InventaireService {
         WHERE
           o."dateOp" BETWEEN ${start} AND ${end}
         GROUP BY
-          a."libelle", a."qty", o."typeOp"
+          o."typeOp"
         ORDER BY
           o."typeOp" ASC;
       `;
@@ -175,7 +176,7 @@ export class InventaireService {
           json_agg(
             json_build_object(
               'date', o."dateOp",
-              'libelle', a."libelle",
+              'libelle', o."libelle",
               'qte', o."qty",
               'designation', a."libelle"
             )
