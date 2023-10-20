@@ -50,6 +50,14 @@ export class InventaireController {
     return this.inventaireService.getGlobalHistoric(start, end);
   }
 
+  @Get('dash')
+  getGlobalDashboardHistoric(
+    @Query('start', ParseDatePipe) start: string,
+    @Query('end', ParseDatePipe) end: string,
+  ) {
+    return this.inventaireService.getGlobalDashboardHistoric(start, end);
+  }
+
   @Get(':id')
   getGlobalHistoricByArticle(
     @Param('id') id: string,
