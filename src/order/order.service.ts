@@ -22,7 +22,7 @@ export class OrderService {
         },
       });
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -42,7 +42,7 @@ export class OrderService {
         },
       });
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -62,7 +62,7 @@ export class OrderService {
         },
       });
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -81,7 +81,7 @@ export class OrderService {
         },
       });
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -98,7 +98,7 @@ export class OrderService {
         },
       });
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 }

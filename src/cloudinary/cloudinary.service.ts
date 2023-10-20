@@ -31,7 +31,7 @@ export class CloudinaryService {
         toStream(file.buffer).pipe(upload);
       });
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -45,7 +45,7 @@ export class CloudinaryService {
       );
       return urls;
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -58,7 +58,7 @@ export class CloudinaryService {
         });
       });
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 }

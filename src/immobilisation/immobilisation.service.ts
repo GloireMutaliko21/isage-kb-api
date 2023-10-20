@@ -14,7 +14,7 @@ export class ImmobilisationService {
         data: { ...dto, vnc: dto.valDepart },
       });
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -27,7 +27,7 @@ export class ImmobilisationService {
         },
       });
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -64,7 +64,7 @@ export class ImmobilisationService {
       `;
       return immobs;
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -96,7 +96,7 @@ export class ImmobilisationService {
       `;
       return immobs;
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 }

@@ -32,7 +32,7 @@ export class AgentFilesService {
         data: { ...dto, url, public_id },
       });
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -59,7 +59,7 @@ export class AgentFilesService {
         },
       });
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 }

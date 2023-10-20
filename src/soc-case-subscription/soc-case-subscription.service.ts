@@ -28,7 +28,7 @@ export class SocCaseSubscriptionService {
       });
       return { subscription, deduction };
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -48,7 +48,7 @@ export class SocCaseSubscriptionService {
         },
       });
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 }

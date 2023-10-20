@@ -17,7 +17,7 @@ export class RolesService {
     try {
       return await this.RoleModel.findMany();
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -30,7 +30,7 @@ export class RolesService {
       if (!role) throw new ForbiddenException('Role could not be found');
       return role;
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -42,7 +42,7 @@ export class RolesService {
 
       return role;
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -59,7 +59,7 @@ export class RolesService {
         where: { id: roleId },
       });
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -77,7 +77,7 @@ export class RolesService {
         },
       });
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -101,7 +101,7 @@ export class RolesService {
         },
       });
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -126,7 +126,7 @@ export class RolesService {
       });
       return access;
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 }

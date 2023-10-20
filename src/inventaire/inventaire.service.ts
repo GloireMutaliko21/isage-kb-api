@@ -50,7 +50,7 @@ export class InventaireService {
         },
       });
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -79,7 +79,7 @@ export class InventaireService {
       `;
       return stockSheet;
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -109,7 +109,7 @@ export class InventaireService {
       `;
       return stockSheet;
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -134,7 +134,7 @@ export class InventaireService {
       `;
       return stockSheet;
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -164,7 +164,7 @@ export class InventaireService {
       `;
       return stockSheet;
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -194,7 +194,7 @@ export class InventaireService {
       `;
       return stockSheet;
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -230,7 +230,7 @@ export class InventaireService {
       `;
       return stockSheet;
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 }

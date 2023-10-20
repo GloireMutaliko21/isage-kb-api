@@ -49,7 +49,7 @@ export class AttendencyService {
       }));
       return this.AttendencyModel.createMany({ data });
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -100,7 +100,7 @@ export class AttendencyService {
           },
         });
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -136,7 +136,7 @@ export class AttendencyService {
       );
       return attendency;
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -163,7 +163,7 @@ export class AttendencyService {
       );
       return attendency;
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -195,7 +195,7 @@ export class AttendencyService {
       );
       return attendency;
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -245,7 +245,7 @@ export class AttendencyService {
       }));
       return this.AttendencyModel.createMany({ data });
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 }

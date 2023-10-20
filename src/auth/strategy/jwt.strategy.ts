@@ -24,7 +24,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       delete user.roles;
       return { ...user, roles };
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 }

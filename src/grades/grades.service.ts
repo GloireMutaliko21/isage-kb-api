@@ -30,7 +30,7 @@ export class GradesService {
       );
       return returnedGrades;
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -52,7 +52,7 @@ export class GradesService {
 
       return { ...grade, folderElements };
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -63,7 +63,7 @@ export class GradesService {
       });
       return grade;
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -91,7 +91,7 @@ export class GradesService {
       });
       return { ...gradeUpdated, folderElements };
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -103,7 +103,7 @@ export class GradesService {
       if (!grade) throw new ForbiddenException('Grade could not be found');
       return await this.GradeModel.delete({ where: { id: gradeId } });
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 }

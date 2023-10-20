@@ -48,7 +48,7 @@ export class CongeService {
         },
       });
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -109,7 +109,7 @@ export class CongeService {
       deleteKeys(approvedConge.agent, ['password', 'resetToken']);
       return approvedConge;
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -157,7 +157,7 @@ export class CongeService {
       deleteKeys(conge.agent, ['password', 'resetToken']);
       return conge;
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -190,7 +190,7 @@ export class CongeService {
       agents.forEach((a) => deleteKeys(a, ['password', 'resetToken']));
       return agentsOnLeave;
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -204,7 +204,7 @@ export class CongeService {
       agents.forEach((a) => deleteKeys(a, ['password', 'resetToken']));
       return records;
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 }

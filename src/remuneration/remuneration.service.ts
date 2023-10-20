@@ -50,7 +50,7 @@ export class RemunerationService {
         nbEnfant: agent.nbChildren,
       };
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -64,7 +64,7 @@ export class RemunerationService {
         include: { agent: true },
       });
     } catch (error) {
-      return new InternalServerErrorException(error);
+      return new InternalServerErrorException(error, { cause: error });
     }
   }
   // Its return result monthly
@@ -97,7 +97,7 @@ export class RemunerationService {
         total: total || 0,
       };
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -111,7 +111,7 @@ export class RemunerationService {
         include: { agent: true },
       });
     } catch (error) {
-      return new InternalServerErrorException(error);
+      return new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -139,7 +139,7 @@ export class RemunerationService {
         total: total || 0,
       };
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -169,7 +169,7 @@ export class RemunerationService {
       });
       return monthlyDeduc;
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -183,7 +183,7 @@ export class RemunerationService {
         include: { agent: true },
       });
     } catch (error) {
-      return new InternalServerErrorException(error);
+      return new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -211,7 +211,7 @@ export class RemunerationService {
         total: total || 0,
       };
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -237,7 +237,7 @@ export class RemunerationService {
       });
       return monthlyPrime;
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -251,7 +251,7 @@ export class RemunerationService {
         include: { agent: true },
       });
     } catch (error) {
-      return new InternalServerErrorException(error);
+      return new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -292,7 +292,7 @@ export class RemunerationService {
         total: total * agentParams.nbEnfant.toNumber() || 0,
       };
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -306,7 +306,7 @@ export class RemunerationService {
         include: { agent: true },
       });
     } catch (error) {
-      return new InternalServerErrorException(error);
+      return new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -339,7 +339,7 @@ export class RemunerationService {
         total: total || 0,
       };
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -353,7 +353,7 @@ export class RemunerationService {
         include: { agent: true },
       });
     } catch (error) {
-      return new InternalServerErrorException(error);
+      return new InternalServerErrorException(error, { cause: error });
     }
   }
   // Its return result monthly
@@ -386,7 +386,7 @@ export class RemunerationService {
         total: total || 0,
       };
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -400,7 +400,7 @@ export class RemunerationService {
         include: { agent: true },
       });
     } catch (error) {
-      return new InternalServerErrorException(error);
+      return new InternalServerErrorException(error, { cause: error });
     }
   }
   // Its return result monthly
@@ -433,7 +433,7 @@ export class RemunerationService {
         total: total || 0,
       };
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -527,7 +527,7 @@ export class RemunerationService {
       });
       return paySlip;
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -560,7 +560,7 @@ export class RemunerationService {
       });
       return formatted;
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -580,7 +580,7 @@ export class RemunerationService {
         };
       return paySlip;
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -634,7 +634,7 @@ export class RemunerationService {
       });
       return formattedPayList;
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -735,7 +735,7 @@ export class RemunerationService {
         throw new ForbiddenException('All agents already paid');
       return agents;
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 }

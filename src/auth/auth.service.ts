@@ -47,7 +47,7 @@ export class AuthService {
         token: access_token,
       };
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 }

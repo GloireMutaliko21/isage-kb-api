@@ -24,7 +24,7 @@ export class SocialCaseService {
       deleteKeys(socialCase.agent, ['password', 'resetToken']);
       return socialCase;
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -40,7 +40,7 @@ export class SocialCaseService {
       );
       return socialCases;
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -66,7 +66,7 @@ export class SocialCaseService {
       deleteKeys(socialCase.agent, ['password', 'resetToken']);
       return socialCase;
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -105,7 +105,7 @@ export class SocialCaseService {
       );
       return socialCase;
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -127,7 +127,7 @@ export class SocialCaseService {
       deleteKeys(socialCas.agent, ['password', 'resetToken']);
       return socialCas;
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -149,7 +149,7 @@ export class SocialCaseService {
       deleteKeys(socCase.agent, ['password', 'resetToken']);
       return socCase;
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -171,7 +171,7 @@ export class SocialCaseService {
       deleteKeys(socCase.agent, ['password', 'resetToken']);
       return socCase;
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 }

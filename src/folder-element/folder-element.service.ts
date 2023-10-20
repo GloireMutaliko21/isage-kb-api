@@ -17,7 +17,7 @@ export class FolderElementService {
         include: { agents: true },
       });
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -31,7 +31,7 @@ export class FolderElementService {
         throw new ForbiddenException('Element could not be found');
       return folderEmt;
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -42,7 +42,7 @@ export class FolderElementService {
       });
       return folderElement;
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -61,7 +61,7 @@ export class FolderElementService {
         where: { id: folderElementId },
       });
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 
@@ -76,7 +76,7 @@ export class FolderElementService {
         where: { id: folderElementId },
       });
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error, { cause: error });
     }
   }
 }
