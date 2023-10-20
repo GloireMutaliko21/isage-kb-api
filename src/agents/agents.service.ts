@@ -108,7 +108,9 @@ export class AgentsService {
       this.mailer.sendMail(
         'Register Success',
         agent.email,
-        `<b>Bonjour, Inscription reussie</b><br/><p>Clique sur ce <a href="http://localhost:3000/auth/createpass/${agent.id}?t=${access_token}">lien</a> pour definir votre mot de passe</p>`,
+        `<b>Bonjour, Inscription votre compte utilisateur chez ISAGE-KB a été créé</b><br/><p>Cliquez sur ce <a href="${this.config.get<string>(
+          'FRONTEND_URL',
+        )}/auth/createpass?t=${access_token}">lien</a> pour definir votre mot de passe</p>`,
       );
       deleteKeys(agent, ['password', 'resetToken']);
       return agent;
