@@ -207,4 +207,17 @@ export class CongeService {
       throw new InternalServerErrorException(error, { cause: error });
     }
   }
+
+  async getAgentConges(agentId: string) {
+    try {
+      const leaves = await this.CongeModel.findMany({
+        where: { agentId },
+        include: {
+          agent: true,
+        },
+      });
+    } catch (error) {
+      throw new InternalServerErrorException(error, { cause: error });
+    }
+  }
 }

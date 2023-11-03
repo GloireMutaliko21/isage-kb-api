@@ -32,6 +32,11 @@ export class CongeController {
     return this.congeService.getUnapprovedConge();
   }
 
+  @Get('mines')
+  getAgentConges(@GetUser('id') agentId: string) {
+    return this.congeService.getAgentConges(agentId);
+  }
+
   @Post()
   @Roles(Role.Admin, Role.DuPers)
   createConge(@Body() dto: CreateCongeDto) {
