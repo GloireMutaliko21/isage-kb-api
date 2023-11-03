@@ -216,6 +216,9 @@ export class CongeService {
           agent: true,
         },
       });
+      const agents = leaves.map((record) => record.agent);
+      agents.forEach((a) => deleteKeys(a, ['password', 'resetToken']));
+      return leaves;
     } catch (error) {
       throw new InternalServerErrorException(error, { cause: error });
     }
