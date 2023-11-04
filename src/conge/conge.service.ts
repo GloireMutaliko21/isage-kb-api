@@ -46,6 +46,10 @@ export class CongeService {
         data: {
           agentId,
         },
+
+        include: {
+          agent: true,
+        },
       });
     } catch (error) {
       throw new InternalServerErrorException(error, { cause: error });
